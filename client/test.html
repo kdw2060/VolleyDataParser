@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testpagina parser</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+      <script src="date.js"></script>
+    <script>        
+    var app = angular.module("app", []);
+      app.controller('MainController', function ($scope, $http) {
+          $scope.gewestW = [];
+          $http.get("http://localhost:3000/api/gewestWedstrijden").success(function (res) {
+          $scope.gewestW = res;
+        });
+          $scope.gewestWju15 = [];
+        $http.get("http://localhost:3000/api/gewestWedstrijdenJU15").success(function (res) {
+          $scope.gewestWju15 = res;
+        });
+          $scope.sportaS = [];
+          $http.get("http://localhost:3000/api/sportaRankings").success(function (res) {
+            $.each(JSON.parse(res), function (i, v) {
+            if (v.name == 'HEREN 3B') {
+                $scope.sportaS = v.standing;
+                }
+            });
+        });
+          $scope.sportaW = [];
+          $http.get("http://localhost:3000/api/D2Wedstrijden").success(function (res) {     
+                $scope.sportaW = JSON.parse(res);
+            });
+      });
+        
+    app.filter('orderObjectBy', function() {
+      return function(items, field, reverse) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+          filtered.push(item);
+        });
+        filtered.sort(function (a, b) {
+          return (a[field] > b[field] ? 1 : -1);
+        });
+        if(reverse) filtered.reverse();
+        return filtered;
+      };
+    });
+        
+    app.filter('trustAsHtml',['$sce', function($sce) {
+    return function(text) {
+      return $sce.trustAsHtml(text);
+    };
+  }]);    
+    </script>
+      <style>
+          .hidden {display: none;}
+      </style>
+  </head>
+
+    
+<body ng-app="app" ng-controller="MainController">
+   <h1>Sportatabel stand</h1>
+        <div>
+            <table class="sp-data-table">
+                <tr><th>Plaats</th><th>Ploeg</th><th>W</th><th>3-0</th><th>3-1</th><th>3-2</th><th>2-3</th><th>1-3</th><th>0-3</th><th>WS</th><th>VS</th><th>FF</th><th>Punten</th></tr>
+                <tr ng-repeat="ranking in sportaS | orderObjectBy: 'place' ">
+                    <script>var results = ranking.custom_results;</script>
+                    <td>{{ranking.place}}</td><td>{{ranking.name}}</td><td>{{ranking.matches}}</td><td>{{ranking.custom_results["3/0"]}}</td><td>{{ranking.custom_results["3/1"]}}</td><td>{{ranking.custom_results["3/2"]}}</td><td>{{ranking.custom_results["2/3"]}}</td><td>{{ranking.custom_results["1/3"]}}</td><td>{{ranking.custom_results["0/3"]}}</td><td>{{ranking.score}}</td><td>{{ranking.counterscore}}</td><td>{{ranking.forfait}}</td><td>{{ranking.points}}</td>
+                </tr>
+            </table>
+        </div>
+       <h1>Sporta wedstrijdlijst D2</h1>
+        <div>
+            <table class="sp-data-table">
+                <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+                <tr ng-repeat="match in sportaW">
+                    <td>{{match.date}}</td><td>{{match.time}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td>{{match.team_home}} - {{match.team_away}}</td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+                </tr>
+            </table>
+        </div>
+    <h1>Volleyscores wedstrijdlijst</h1>
+        <div>
+            <table class="sp-data-table">
+                <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+                <tr ng-repeat="match in gewestW">
+                    <td>{{match.datum}}</td><td>{{match.tijdstip}}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
+                </tr>
+            </table>
+        </div>
+    <h1>Volleyscores wedstrijdlijst JU15</h1>
+        <div>
+            <table class="sp-data-table">
+                <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+                <tr ng-repeat="match in gewestWju15">
+                    <td>{{match.datum}}</td><td>{{match.tijdstip}}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
+                </tr>
+            </table>
+        </div>
+</body>
+</html>

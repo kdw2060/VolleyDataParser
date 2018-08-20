@@ -1,0 +1,21 @@
+{
+  "name": "volleydata_parser",
+  "version": "0.3",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kris De Winter",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "ical.js": "^1.2.2",
+    "request": "^2.0"
+  },
+    "engine": {
+    "node": "*",
+    "npm": "*"
+  },
+}

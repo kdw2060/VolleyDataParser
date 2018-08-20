@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wedstrijdentabel</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+    <script>        
+    var app = angular.module("app", []);
+    app.controller('MainController', function ($scope, $http) {
+        $scope.wedstrijden = [];
+        $http.get("http://localhost:3000/api/H2wedstrijden").success(function (res) {
+          $scope.wedstrijden = JSON.parse(res);
+        });
+    });
+    app.filter('orderObjectBy', function() {
+      return function(items, field, reverse) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+          filtered.push(item);
+        });
+        filtered.sort(function (a, b) {
+          return (a[field] > b[field] ? 1 : -1);
+        });
+        if(reverse) filtered.reverse();
+        return filtered;
+      };
+    });
+    app.filter('trustAsHtml',['$sce', function($sce) {
+        return function(text) {
+          return $sce.trustAsHtml(text);
+        };
+    }]);
+    </script>
+    <style>
+      .hidden {display: none;}
+    </style>
+  </head>
+
+    
+<body ng-app="app" ng-controller="MainController">
+    <table class="sp-data-table">
+        <thead>
+            <tr><th data-sorter="shortDate">Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="match in wedstrijden | orderObjectBy: 'number'">
+                <td class="hidden">{{match.number}}</td><td>{{match.date}}</td><td>{{match.time}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td>{{match.team_home}} - {{match.team_away}}</td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

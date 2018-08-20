@@ -1,0 +1,30 @@
+
+BEGIN:VEVENT\r\n
+DTSTART:20181006T133000Z\r\n
+DTEND:20181006T150000Z\r\n
+DTSTAMP:20180802T201000Z\r\n
+UID:112353\r\n
+CREATED:20180802T201000Z\r\n
+DESCRIPTION;ENCODING=QUOTED-PRINTABLE:JU15RR1 -0019: OSTA BERCHEM - HELLVOC HEMIKSEM-SCHELLE B\\n\\nLocatie: Berchem Sporthal 't Rooi 2\\nBerchem Stadionstraat 73, 2600 BERCHEM\\n\\nLaatste update: 02/08/2018 22:10\\n\\nDe wedstrijd info wordt minstens 1x per dag geupdate. Dus als de update datum niet recent is, dan kan het zijn dat je niet de laatste informatie hebt. Dit ligt typisch aan instellingen op je telefoon. \r\n\r\n
+LAST-MODIFIED:20180802T201000Z\r\n
+LOCATION:Berchem Sporthal 't Rooi 2, Berchem Stadionstraat 73, 2600 BERCHEM Belgie\r\n
+SEQUENCE:0\r\n
+STATUS:CONFIRMED\r\n
+SUMMARY:JU15RR1 -0019: OSTA BERCHEM - HELLVOC HEMIKSEM-SCHELLE 
+
+
+
+BEGIN:VEVENT 
+DTSTART:20180916T093000Z 
+DTEND:20180916T110000Z 
+DTSTAMP:20180812T124700Z 
+UID:114321 
+CREATED:20180812T124700Z 
+DESCRIPTION;ENCODING=QUOTED-PRINTABLE:MU15RR2-0002: W.E.K. LOENHOUT B - OSTA BERCHEM\n\nLocatie: Loenhout Sportschuur\nKerkblokstraat 16, 2990 LOENHOUT\n\nLaatste update: 12/08/2018 14:47\n\nDe wedstrijd info wordt minstens 1x per dag geupdate. Dus als de update datum niet recent is, dan kan het zijn dat je niet de laatste informatie hebt. Dit ligt typisch aan instellingen op je telefoon. 
+LAST-MODIFIED:20180812T124700Z 
+LOCATION:Loenhout Sportschuur, Kerkblokstraat 16, 2990 LOENHOUT Belgie 
+SEQUENCE:0 
+STATUS:CONFIRMED 
+SUMMARY:MU15RR2-0002: W.E.K. LOENHOUT B - OSTA BERCHEM 
+TRANSP:OPAQUE 
+END:VEVENT

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wedstrijdentabel</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+    <script>        
+    var app = angular.module("app", []);
+      app.controller('MainController', function ($scope, $http) {
+          $scope.wedstrijden = [];
+        $http.get("http://localhost:3000/api/gewestWedstrijdenJU15").success(function (res) {
+          $scope.wedstrijden = res;
+        });
+      });
+    app.filter('orderObjectBy', function() {
+      return function(items, field, reverse) {
+        var filtered = [];
+        angular.forEach(items, function(item) {
+          filtered.push(item);
+        });
+        filtered.sort(function (a, b) {
+          return (a[field] > b[field] ? 1 : -1);
+        });
+        if(reverse) filtered.reverse();
+        return filtered;
+      };
+    });
+        
+    </script>
+  </head>
+
+    
+<body ng-app="app" ng-controller="MainController">
+    <table class="sp-data-table">
+        <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+        <tr ng-repeat="match in wedstrijden">
+            <td>{{match.datum}}</td><td>{{match.tijdstip}}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
+        </tr>
+    </table>
+</body>
+</html>
