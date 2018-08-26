@@ -4,12 +4,28 @@
     <title>Wedstrijdentabel</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
-    <script>        
+    <script>   
+            function stringToDate(_date,_format,_delimiter) {
+                var formatLowerCase=_format.toLowerCase();
+                var formatItems=formatLowerCase.split(_delimiter);
+                var dateItems=_date.split(_delimiter);
+                var monthIndex=formatItems.indexOf("mm");
+                var dayIndex=formatItems.indexOf("dd");
+                var yearIndex=formatItems.indexOf("yyyy");
+                var month=parseInt(dateItems[monthIndex]);
+                month-=1;
+                var formatedDate = new Date(dateItems[yearIndex],month,dateItems[dayIndex]);
+                return formatedDate;
+    }
     var app = angular.module("app", []);
     app.controller('MainController', function ($scope, $http) {
         $scope.wedstrijden = [];
         $http.get("http://localhost:3000/api/H3wedstrijden").success(function (res) {
           $scope.wedstrijden = JSON.parse(res);
+            angular.forEach($scope.wedstrijden, function(value,index){
+                var dateObj = stringToDate(value.date, "dd/MM/yyyy","/");
+                value.date = dateObj;
+            })
         });
     });
     app.filter('orderObjectBy', function() {
@@ -38,11 +54,13 @@
 
     
 <body ng-app="app" ng-controller="MainController">
+    <div class="sp-scrollable-table-wrapper">
     <table class="sp-data-table">
         <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
-        <tr ng-repeat="match in wedstrijden | orderObjectBy: 'number'">
-            <td class="hidden">{{match.number}}</td><td>{{match.date}}</td><td>{{match.time}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td>{{match.team_home}} - {{match.team_away}}</td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+        <tr ng-repeat="match in wedstrijden | orderObjectBy: 'date'">
+            <td class="hidden">{{match.number}}</td><td>{{match.date | date:'dd-MM-yyyy'}}</td><td>{{match.time}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td>{{match.team_home}} - {{match.team_away}}</td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
         </tr>
     </table>
+    </div>
 </body>
 </html>

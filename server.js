@@ -5,7 +5,7 @@ var request = require('request');
 var app = express();
 app.use(express.static('client'));
 var ICAL = require('ical.js');
-
+const icalGenerator = require('ical-generator');
 
 //Globale variabelen
 var sportaWedstrijden
@@ -28,7 +28,7 @@ var MU17wedstrijden;
 var D2GAwedstrijden;
 var D3GAwedstrijden;
 var H1GAwedstrijden;
-var D2wedstrijden;
+var D3wedstrijden;
 var D4wedstrijden;
 var D5wedstrijden;
 var H2wedstrijden;
@@ -53,6 +53,22 @@ function makeMatch(uid, dt, ts, comp, wed, rslt, loc) {
     this.locatie = loc;
 }
 
+function maakIcalFeed(datum, uur, home, away){
+    icalGenerator({
+        domain:'ostaberchem.be',
+        events: [
+            {
+                start: '' ,
+                end: '' ,
+                timestamp: '',
+                summary: home +' - ' + away,
+                organizer: 'Osta Berchem'
+            }
+        ]
+    }).toString();
+    return;
+}
+
 //Data verkrijgen, parsen en aanbieden aan client pagina's
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/rangschikking/1/json?type=league', function (error, response, body) {
     if (!error && response.statusCode == 200) {
@@ -60,18 +76,16 @@ request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/rangschik
     }
 });
 
-//ter referentie: D2 = 284, D4 = 296, D5 = 306, H2 = 351, H3 = 362
+//ter referentie: D3 = 284, D4 = 296, D5 = 306, H2 = 351, H3 = 362
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/json?organisation=1684', function (error, response, body) {
     if (!error && response.statusCode == 200) {
         sportaWedstrijden = body;
-//      TODO
-//      sort sportaWedstrijden by date in sportaWedstrijden.date
     }
 });
 
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/json?organisation=1684&team=284', function (error, response, body) {
     if (!error && response.statusCode == 200) {
-        D2wedstrijden = body;
+        D3wedstrijden = body;
     }
 });
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/json?organisation=1684&team=296', function (error, response, body) {
@@ -87,6 +101,9 @@ request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/json?organisation=1684&team=351', function (error, response, body) {
     if (!error && response.statusCode == 200) {
         H2wedstrijden = body;
+//        TODO: feedgenerator afwerken
+//        var icalFeed = maakIcalFeed('15/09/2018', '20:30', 'Heren 2', 'Vojaka');
+//        console.log(icalFeed);
     }
 });
 request.get('https://mijnbeheer.sportafederatie.be/competities/publiek/schema/4/json?organisation=1684&team=362', function (error, response, body) {
@@ -110,7 +127,9 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
                 var locatie = event.location;
                 //lelijke vcaldata leesbaar maken
                 var datum = matchday.day + "-" + matchday.month + "-" + matchday.year;
-                var tijdstip = (matchday.hour + 2) + ":" + matchday.minute;
+                var minuten = matchday.minute.toString();
+                if (minuten.length == 1) {minuten = matchday.minute + '0';}
+                var tijdstip = (matchday.hour + 2) + ":" + minuten;
                 var wedstrijd = summary.split(": ").pop().capitalize();
                 for (j=0; j < 6 ; j++){
                     if (event.summary.indexOf(reeksen[j]) > -1)
@@ -121,8 +140,6 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
                 var matchObject = new makeMatch(id, datum, tijdstip, competitie, wedstrijd, uitslag, locatie);
                 gewestWedstrijdenJson.push(matchObject); 
         }
-//      TODO
-//      sort gewestWedstrijdenJson by date in gewestWedstrijdenJson.datum
         JU15wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
             return n.competitie==='JU15';
         });
@@ -151,8 +168,8 @@ app.get('/api/sportaRankings', function (req, res) {
 app.get('/api/sportaWedstrijden', function (req, res) {
   res.status(200).json(sportaWedstrijden);
 });
-app.get('/api/D2Wedstrijden', function (req, res) {
-  res.status(200).json(D2wedstrijden);
+app.get('/api/D3Wedstrijden', function (req, res) {
+  res.status(200).json(D3wedstrijden);
 });
 app.get('/api/D4Wedstrijden', function (req, res) {
   res.status(200).json(D4wedstrijden);
