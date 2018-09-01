@@ -5,27 +5,11 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
     <script>     
-    function stringToDate(_date,_format,_delimiter) {
-                var formatLowerCase=_format.toLowerCase();
-                var formatItems=formatLowerCase.split(_delimiter);
-                var dateItems=_date.split(_delimiter);
-                var monthIndex=formatItems.indexOf("mm");
-                var dayIndex=formatItems.indexOf("dd");
-                var yearIndex=formatItems.indexOf("yyyy");
-                var month=parseInt(dateItems[monthIndex]);
-                month-=1;
-                var formatedDate = new Date(dateItems[yearIndex],month,dateItems[dayIndex]);
-                return formatedDate;
-    }
     var app = angular.module("app", []);
       app.controller('MainController', function ($scope, $http) {
           $scope.wedstrijden = [];
         $http.get("http://localhost:3000/api/gewestWedstrijdenMU15").success(function (res) {
           $scope.wedstrijden = res;
-            angular.forEach($scope.wedstrijden, function(value,index){
-                var dateObj = stringToDate(value.datum, "dd-MM-yyyy","-");
-                value.datum = dateObj;
-            })  
         });
       });
     app.filter('orderObjectBy', function() {
@@ -49,9 +33,9 @@
 <body ng-app="app" ng-controller="MainController">
     <div class="sp-scrollable-table-wrapper">
     <table class="sp-data-table">
-        <tr><th>Datum</th><th>Uur</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+        <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
         <tr ng-repeat="match in wedstrijden | orderObjectBy: 'datum'">
-            <td>{{match.datum | date:'dd-MM-yyyy'}}</td><td>{{match.tijdstip}}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
+            <td>{{match.datum | date:'dd-MM-yyyy H:mm' : 'CET' }}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
         </tr>
     </table>
     </div>

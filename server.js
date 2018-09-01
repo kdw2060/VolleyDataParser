@@ -16,7 +16,6 @@ var gewestWedstrijdenJson = [];
 //    {
 //        uid: '',
 //        datum: '',
-//        tijdstip: '',
 //        competitie: '',
 //        wedstrijd: '',
 //        uitslag: '',
@@ -43,10 +42,9 @@ String.prototype.capitalize = function(){
             return m.toUpperCase();
         });
     };
-function makeMatch(uid, dt, ts, comp, wed, rslt, loc) {
+function makeMatch(uid, dt, comp, wed, rslt, loc) {
     this.uid = uid;
     this.datum = dt;
-    this.tijdstip = ts;
     this.competitie = comp;
     this.wedstrijd = wed;
     this.uitslag = rslt;
@@ -126,10 +124,7 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
                 var matchday = event.startDate;
                 var locatie = event.location;
                 //lelijke vcaldata leesbaar maken
-                var datum = matchday.day + "-" + matchday.month + "-" + matchday.year;
-                var minuten = matchday.minute.toString();
-                if (minuten.length == 1) {minuten = matchday.minute + '0';}
-                var tijdstip = (matchday.hour + 2) + ":" + minuten;
+                var datum = new Date(matchday);
                 var wedstrijd = summary.split(": ").pop().capitalize();
                 for (j=0; j < 6 ; j++){
                     if (event.summary.indexOf(reeksen[j]) > -1)
@@ -137,7 +132,7 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
                     }
                 var uitslag = '';
                 //naar eigen json-object omzetten
-                var matchObject = new makeMatch(id, datum, tijdstip, competitie, wedstrijd, uitslag, locatie);
+                var matchObject = new makeMatch(id, datum, competitie, wedstrijd, uitslag, locatie);
                 gewestWedstrijdenJson.push(matchObject); 
         }
         JU15wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
