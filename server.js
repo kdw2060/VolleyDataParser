@@ -1,8 +1,8 @@
 //Importing libraries
-var express = require('express');
+const express = require('express');
 var bodyparser = require('body-parser');
 var request = require('request');
-var app = express();
+const app = express();
 app.use(express.static('client'));
 var ICAL = require('ical.js');
 const icalGenerator = require('ical-generator');
