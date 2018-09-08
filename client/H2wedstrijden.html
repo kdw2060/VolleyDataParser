@@ -20,7 +20,7 @@
     var app = angular.module("app", []);
     app.controller('MainController', function ($scope, $http) {
         $scope.wedstrijden = [];
-        $http.get("http://localhost:3000/api/H2wedstrijden").success(function (res) {
+        $http.get("/api/H2wedstrijden").success(function (res) {
           $scope.wedstrijden = JSON.parse(res);
             angular.forEach($scope.wedstrijden, function(value,index){
                 var dateObj = stringToDate(value.date, "dd/MM/yyyy","/");

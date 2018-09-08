@@ -225,7 +225,7 @@ app.get('/api/D4Wedstrijden', function (req, res) {
 app.get('/api/D5Wedstrijden', function (req, res) {
   res.status(200).json(D5wedstrijden);
 });
-app.get('/api/H2Wedstrijden', function (req, res) {
+app.get('/api/H2Wedstrijden', function (req, res, next) {
   res.status(200).json(H2wedstrijden);
 });
 app.get('/api/H3Wedstrijden', function (req, res) {
