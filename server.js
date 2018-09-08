@@ -4,6 +4,7 @@ var bodyparser = require('body-parser');
 var request = require('request');
 var app = express();
 app.use(express.static('client'));
+var cors = require('cors');
 
 //Openode.io dinges
 var debug = require('debug')('test');
@@ -254,12 +255,13 @@ app.get('/api/gewestWedstrijdenH1GA', function (req, res) {
 });
 
 app.use(bodyparser.json());
+app.use(cors());
 
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+//app.use(function(req, res, next) {
+//  res.header("Access-Control-Allow-Origin", "*");
+//  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//  next();
+//});
 
 //Voor lokaal runnen, dus niet op Openode of Heroku
 //app.listen(3000);
