@@ -6,6 +6,7 @@ var app = express();
 app.use(express.static('client'));
 
 //Openode.io dinges
+var debug = require('debug')('test');
 var http = require('http');
 var server = http.createServer(app);
 var port = normalizePort(process.env.PORT || '3002');
