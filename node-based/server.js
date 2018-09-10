@@ -9,6 +9,9 @@ var cors = require('cors');
 //Openode.io dinges
 var debug = require('debug')('test');
 var http = require('http');
+var https = require('https');
+const fs = require("fs");
+const read = fs.readFileSync;
 var server = http.createServer(app);
 var port = normalizePort(process.env.PORT || '3002');
 server.listen(port);
@@ -54,7 +57,27 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
-
+// HTTPS server
+//let certificate = read("./certs/website.crt", 'utf8');
+//let chainLines = read("./certs/intermediate_domain_ca.crt", 'utf8').split("\n");
+//let cert = [];
+//let ca = [];
+//chainLines.forEach(function(line) {
+//  cert.push(line);
+//  if (line.match(/-END CERTIFICATE-/)) {
+//    ca.push(cert.join("\n"));
+//    cert = [];
+//  }
+//});
+//
+//let httpsOptions = {
+//  key: read('./certs/privatekey.key'),
+//  cert: certificate,
+//  ca: ca
+//};
+//
+//var secServer = https.createServer(httpsOptions, app);
+//secServer.listen(443);
 
 //App specifieke libraries
 var ICAL = require('ical.js');
@@ -256,12 +279,6 @@ app.get('/api/gewestWedstrijdenH1GA', function (req, res) {
 
 app.use(bodyparser.json());
 app.use(cors());
-
-//app.use(function(req, res, next) {
-//  res.header("Access-Control-Allow-Origin", "*");
-//  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//  next();
-//});
 
 //Voor lokaal runnen, dus niet op Openode of Heroku
 //app.listen(3000);

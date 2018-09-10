@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Testpagina parser</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+    <script src="ical.min.js"></script>
+    <script src="scripts.js"></script>
+  </head>
+
+    
+<body ng-app="app" ng-controller="MainController">
+   <h1>Sportatabel stand</h1>
+        <div>
+            <table class="sp-data-table">
+                <tr><th>Plaats</th><th>Ploeg</th><th>W</th><th>3-0</th><th>3-1</th><th>3-2</th><th>2-3</th><th>1-3</th><th>0-3</th><th>WS</th><th>VS</th><th>FF</th><th>Punten</th></tr>
+                <tr ng-repeat="ranking in sportaS | orderObjectBy: 'place' ">
+                    <script>var results = ranking.custom_results;</script>
+                    <td>{{ranking.place}}</td><td>{{ranking.name}}</td><td>{{ranking.matches}}</td><td>{{ranking.custom_results["3/0"]}}</td><td>{{ranking.custom_results["3/1"]}}</td><td>{{ranking.custom_results["3/2"]}}</td><td>{{ranking.custom_results["2/3"]}}</td><td>{{ranking.custom_results["1/3"]}}</td><td>{{ranking.custom_results["0/3"]}}</td><td>{{ranking.score}}</td><td>{{ranking.counterscore}}</td><td>{{ranking.forfait}}</td><td>{{ranking.points}}</td>
+                </tr>
+            </table>
+        </div>
+    
+       <h1>Sporta wedstrijdlijst D3</h1>
+        <div class="sp-scrollable-table-wrapper">
+            <table class="sp-data-table">
+                <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+                <tr ng-repeat="match in D3wedstrijden | orderObjectBy: 'datetime'">
+                    <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+                </tr>
+            </table>
+        </div>
+    
+    <h1>Volleyscores alle wedstrijden</h1>
+    <div class="sp-scrollable-table-wrapper">
+    <table class="sp-data-table">
+        <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+        <tr ng-repeat="match in alleGewestWedstrijden | orderObjectBy: 'datum'">
+            <td>{{match.datum | date:'dd-MM-yyyy H:mm' : 'CET' }}</td><td>{{match.competitie}}</td><td>{{match.wedstrijd}}</td><td>{{match.uitslag}}</td><td>{{match.locatie}}</td>
+        </tr>
+    </table>
+    </div>
+    
+    <h1>Sporta alle wedstrijden</h1>
+    <div class="sp-scrollable-table-wrapper">
+            <table class="sp-data-table">
+                <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+                <tr ng-repeat="match in alleSportaWedstrijden | orderObjectBy: 'datetime'">
+                    <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+                </tr>
+            </table>
+        </div>
+    
+    <h1>Alle alle wedstrijden</h1>
+
+</body>
+</html>
