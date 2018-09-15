@@ -7,56 +7,56 @@ app.use(express.static('client'));
 var cors = require('cors');
 
 //Openode.io dinges
-var debug = require('debug')('test');
-var http = require('http');
-var https = require('https');
-const fs = require("fs");
-const read = fs.readFileSync;
-var server = http.createServer(app);
-var port = normalizePort(process.env.PORT || '3002');
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
-app.set('port', port);
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-  if (isNaN(port)) {
-    return val;
-  }
-  if (port >= 0) {
-    return port;
-  }
-  return false;
-}
-
-function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
-}
-
-function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
-}
+//var debug = require('debug')('test');
+//var http = require('http');
+//var https = require('https');
+//const fs = require("fs");
+//const read = fs.readFileSync;
+//var server = http.createServer(app);
+//var port = normalizePort(process.env.PORT || '3002');
+//server.listen(port);
+//server.on('error', onError);
+//server.on('listening', onListening);
+//app.set('port', port);
+//function normalizePort(val) {
+//  var port = parseInt(val, 10);
+//  if (isNaN(port)) {
+//    return val;
+//  }
+//  if (port >= 0) {
+//    return port;
+//  }
+//  return false;
+//}
+//
+//function onError(error) {
+//  if (error.syscall !== 'listen') {
+//    throw error;
+//  }
+//  var bind = typeof port === 'string'
+//    ? 'Pipe ' + port
+//    : 'Port ' + port
+//  switch (error.code) {
+//    case 'EACCES':
+//      console.error(bind + ' requires elevated privileges');
+//      process.exit(1);
+//      break;
+//    case 'EADDRINUSE':
+//      console.error(bind + ' is already in use');
+//      process.exit(1);
+//      break;
+//    default:
+//      throw error;
+//  }
+//}
+//
+//function onListening() {
+//  var addr = server.address();
+//  var bind = typeof addr === 'string'
+//    ? 'pipe ' + addr
+//    : 'port ' + addr.port;
+//  debug('Listening on ' + bind);
+//}
 // HTTPS server
 //let certificate = read("./certs/website.crt", 'utf8');
 //let chainLines = read("./certs/intermediate_domain_ca.crt", 'utf8').split("\n");
@@ -85,19 +85,11 @@ const icalGenerator = require('ical-generator');
 
 
 //Globale variabelen
-var sportaWedstrijden
+var alleWedstrijden;
+var sportaWedstrijden;
 var sportaRankings;
 var gewestWedstrijdenVcal;
 var gewestWedstrijdenJson = [];
-// ter referentie: de structuur van het json object
-//    {
-//        uid: '',
-//        datum: '',
-//        competitie: '',
-//        wedstrijd: '',
-//        uitslag: '',
-//        locatie: ''
-//    }
 var JU15wedstrijden;
 var MU15wedstrijden;
 var MU17wedstrijden;
@@ -119,13 +111,13 @@ String.prototype.capitalize = function(){
             return m.toUpperCase();
         });
     };
-function makeMatch(uid, dt, comp, wed, rslt, loc) {
-    this.uid = uid;
-    this.datum = dt;
-    this.competitie = comp;
-    this.wedstrijd = wed;
-    this.uitslag = rslt;
-    this.locatie = loc;
+function makeMatch(dt, comp, home, away, rslt, loc) {
+    this.datetime = dt;
+    this.division = comp;
+    this.team_home = home;
+    this.team_away = away;
+    this.result = rslt;
+    this.location = loc;
 }
 
 function maakIcalFeed(datum, uur, home, away){
@@ -196,44 +188,47 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
         
         for (i=0; i < vevents.length; i++) {
             var event = new ICAL.Event(vevents[i]);
-                var id = event.uid;
                 var summary = event.summary;
-                var matchday = event.startDate;
-                var locatie = event.location;
-                //lelijke vcaldata leesbaar maken
-                var datum = new Date(matchday);
-                var wedstrijd = summary.split(": ").pop().capitalize();
-                for (j=0; j < 6 ; j++){
-                    if (event.summary.indexOf(reeksen[j]) > -1)
-                    var competitie = reeksen[j];
-                    }
-                var uitslag = '';
-                //naar eigen json-object omzetten
-                var matchObject = new makeMatch(id, datum, competitie, wedstrijd, uitslag, locatie);
+                    var matchday = event.startDate;
+                    var locatie = event.location;
+                    var datum = new Date(matchday);
+                    var wedstrijd = summary.split(": ").pop().capitalize();
+                    var teams = wedstrijd.split(' - ');
+                    var home = teams[0];
+                    var away = teams[1];
+                    for (j=0; j < 6 ; j++){
+                        if (event.summary.indexOf(reeksen[j]) > -1)
+                        var competitie = reeksen[j];
+                        }
+                    var uitslag = '';
+                    //naar eigen json-object omzetten
+                    var matchObject = new makeMatch(datum, competitie, home, away, uitslag, locatie);
                 gewestWedstrijdenJson.push(matchObject); 
         }
         JU15wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='JU15';
+            return n.division==='JU15';
         });
         MU15wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='MU15';
-        });
-        MU17wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='MU17';
+            return n.division==='MU15';
         });
         D2GAwedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='D2GA';
+            return n.division==='D2GA';
         });
         D3GAwedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='D3GA';
+            return n.division==='D3GA';
         });
         H1GAwedstrijden = gewestWedstrijdenJson.filter(function (n, i){
-            return n.competitie==='H1GA';
+            return n.division==='H1GA';
         });
     }
 });
 
-
+app.get('/api/alleWedstrijden', function (req, res) {
+    gewestWedstrijdenJson = JSON.stringify(gewestWedstrijdenJson);
+    alleWedstrijden = sportaWedstrijden.concat(gewestWedstrijdenJson);
+//    console.log(alleWedstrijden);
+    res.status(200).json(alleWedstrijden);
+});
 app.get('/api/sportaRankings', function (req, res) {
   res.status(200).json(sportaRankings);
 });
@@ -264,9 +259,6 @@ app.get('/api/gewestWedstrijdenJU15', function (req, res) {
 app.get('/api/gewestWedstrijdenMU15', function (req, res) {
   res.status(200).json(MU15wedstrijden);
 });
-app.get('/api/gewestWedstrijdenMU17', function (req, res) {
-  res.status(200).json(MU17wedstrijden);
-});
 app.get('/api/gewestWedstrijdenD2GA', function (req, res) {
   res.status(200).json(D2GAwedstrijden);
 });
@@ -281,4 +273,4 @@ app.use(bodyparser.json());
 app.use(cors());
 
 //Voor lokaal runnen, dus niet op Openode of Heroku
-//app.listen(3000);
+app.listen(3000);

@@ -9,16 +9,17 @@ String.prototype.capitalize = function(){
             return m.toUpperCase();
         });
     };
-function makeMatch(dt, comp, wed, rslt, loc) {
-    this.datum = dt;
-    this.competitie = comp;
-    this.wedstrijd = wed;
-    this.uitslag = rslt;
-    this.locatie = loc;
+function makeMatch(dt, comp, home, away, rslt, loc) {
+    this.datetime = dt;
+    this.division = comp;
+    this.team_home = home;
+    this.team_away = away;
+    this.result = rslt;
+    this.location = loc;
 }
 
 // Volleyscores.be data omzetten naar Json
-var reeksen = ['JU15', 'MU15', 'MU17', 'D2GA', 'D3GA', 'H1GA'];
+var reeksen = ['JU15', 'MU15', 'D2GA', 'D3GA', 'H1GA'];
 function parseVcalToJson(data){
         var jcalData = ICAL.parse(data);
         var comp = new ICAL.Component(jcalData);
@@ -30,16 +31,18 @@ function parseVcalToJson(data){
                     var summary = event.summary;
                     var matchday = event.startDate;
                     var locatie = event.location;
-                    //lelijke vcaldata leesbaar maken
                     var datum = new Date(matchday);
                     var wedstrijd = summary.split(": ").pop().capitalize();
+                    var teams = wedstrijd.split(' - ');
+                    var home = teams[0];
+                    var away = teams[1];
                     for (j=0; j < 6 ; j++){
                         if (event.summary.indexOf(reeksen[j]) > -1)
                         var competitie = reeksen[j];
                         }
                     var uitslag = '';
                     //naar eigen json-object omzetten
-                    var matchObject = new makeMatch(datum, competitie, wedstrijd, uitslag, locatie);
+                    var matchObject = new makeMatch(datum, competitie, home, away, uitslag, locatie);
                     gewestWedstrijdenJson.push(matchObject); 
             }
         return gewestWedstrijdenJson;
@@ -68,27 +71,23 @@ function parseVcalToJson(data){
             $scope.alleGewestWedstrijden = wedstrijdenJson;
             
             var H1GAwedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='H1GA';});
+                return n.division==='H1GA';});
             $scope.H1wedstrijden = H1GAwedstrijden;
             
             var D2GAwedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='D2GA';});
+                return n.division==='D2GA';});
             $scope.D1wedstrijden = D2GAwedstrijden;
             
             var D3GAwedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='D3GA';});
+                return n.division==='D3GA';});
             $scope.D2wedstrijden = D3GAwedstrijden;
             
             var MU15wedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='MU15';});
+                return n.division==='MU15';});
             $scope.MU15wedstrijden = MU15wedstrijden;
             
-            var MU17wedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='MU17';});
-            $scope.MU17wedstrijden = MU17wedstrijden;
-            
             var JU15wedstrijden = wedstrijdenJson.filter(function (n, i){
-                return n.competitie==='JU15';});
+                return n.division==='JU15';});
             $scope.JU15wedstrijden = JU15wedstrijden;
         });
     
@@ -99,7 +98,7 @@ function parseVcalToJson(data){
                 var timeParts = value.time.split(":");
                 var dateObj = new Date(dateParts[2], dateParts[1] -1,dateParts[0],timeParts[0], timeParts[1],0);
                 value.datetime = dateObj;
-            })
+            });
         });
         $http.get(webserverpad + "H2proxy.php").success(function (res) {
             $scope.H2wedstrijden = res;
@@ -146,6 +145,9 @@ function parseVcalToJson(data){
                 value.datetime = dateObj;
             })
         });
+
+        //trying out merging
+        
       });
     app.filter('orderObjectBy', function() {
       return function(items, field, reverse) {

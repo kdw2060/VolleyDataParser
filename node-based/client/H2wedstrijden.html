@@ -8,11 +8,13 @@
     var app = angular.module("app", []);
     app.controller('MainController', function ($scope, $http) {
         $scope.wedstrijden = [];
-        $http.get("http://volleyparser.us.openode.io/api/H2wedstrijden").success(function (res) {
+        $http.get("/api/H2wedstrijden").success(function (res) {
           $scope.wedstrijden = JSON.parse(res);
             angular.forEach($scope.wedstrijden, function(value,index){
-                var dateObj = stringToDate(value.date, "dd/MM/yyyy","/");
-                value.date = dateObj;
+                var dateParts = value.date.split("/");
+                var timeParts = value.time.split(":");
+                var dateObj = new Date(dateParts[2], dateParts[1] -1,dateParts[0],timeParts[0], timeParts[1],0);
+                value.datetime = dateObj;
             })
         });
     });
@@ -42,7 +44,7 @@
     <div class="sp-scrollable-table-wrapper">
     <table class="sp-data-table">
         <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
-        <tr ng-repeat="match in H2wedstrijden | orderObjectBy: 'datetime'">
+        <tr ng-repeat="match in wedstrijden | orderObjectBy: 'datetime'">
             <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
         </tr>
     </table>
