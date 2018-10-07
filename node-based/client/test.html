@@ -2,42 +2,30 @@
 <html>
   <head>
     <title>Testpagina parser</title>
+    <script data-require="moment.js@2.22.2" data-semver="2.22.2" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
     <script>        
     var app = angular.module("app", []);
       app.controller('MainController', function ($scope, $http) {
-          $scope.gewestW = [];
+          $scope.alleGewestWedstrijden = [];
           $http.get("http://localhost:3000/api/gewestWedstrijden").success(function (res) {
-          $scope.gewestW = res;
-        });
-          $scope.gewestWju15 = [];
-        $http.get("http://localhost:3000/api/gewestWedstrijdenJU15").success(function (res) {
-          $scope.gewestWju15 = res;
-        });
+            $scope.alleGewestWedstrijden = res;
+            });
+          
           $scope.sportaS = [];
           $http.get("http://localhost:3000/api/sportaRankings").success(function (res) {
             $.each(JSON.parse(res), function (i, v) {
-            if (v.name == 'HEREN 3B') {
-                $scope.sportaS = v.standing;
-                }
+                if (v.name == 'HEREN 3B') {
+                    $scope.sportaS = v.standing;
+                    }
+                });
             });
-        });
-          $scope.D3wedstrijden = [];
-          $http.get("http://localhost:3000/api/D3Wedstrijden").success(function (res) {     
-                $scope.D3wedstrijden = JSON.parse(res);
-                angular.forEach($scope.D3wedstrijden, function(value,index){
-                    var dateParts = value.date.split("/");
-                    var timeParts = value.time.split(":");
-                    var dateObj = new Date(dateParts[2], dateParts[1] -1,dateParts[0],timeParts[0], timeParts[1],0);
-                    value.datetime = dateObj;
-                })
-            });
-          $scope.alleWedstrijden = [];
-          $http.get("http://localhost:3000/api/alleWedstrijden").success(function (res) {     
-              $scope.alleWedstrijden = res;
-              console.log($scope.alleWedstrijden);
-              angular.forEach($scope.alleWedstrijden, function(value,index){
+          
+          $scope.alleSportaWedstrijden = [];
+          $http.get("http://localhost:3000/api/sportaWedstrijden").success(function (res) {     
+                $scope.alleSportaWedstrijden = JSON.parse(res);
+                angular.forEach($scope.alleSportaWedstrijden, function(value,index){
                     var dateParts = value.date.split("/");
                     var timeParts = value.time.split(":");
                     var dateObj = new Date(dateParts[2], dateParts[1] -1,dateParts[0],timeParts[0], timeParts[1],0);
@@ -64,7 +52,18 @@
     return function(text) {
       return $sce.trustAsHtml(text);
     };
-  }]);    
+    }]); 
+    
+    app.filter('recenteWedstrijden', function() {
+      return function(items) {
+          let recentvoorbij = moment().subtract(4, 'd');
+          let nabijtoekomst = moment().add(7, 'd');
+          
+          return items.filter(function(item){
+              return moment(item.datetime).isBetween(recentvoorbij, nabijtoekomst);
+          })
+      };
+    });
     </script>
   </head>
 
@@ -80,11 +79,22 @@
             </table>
         </div>
 
-    <h1>Sporta wedstrijdlijst D3</h1>
-        <div>
+
+    <h1>Volleyscores alle wedstrijden</h1>
+    <div class="sp-scrollable-table-wrapper">
+    <table class="sp-data-table">
+        <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
+        <tr ng-repeat="match in alleGewestWedstrijden | orderObjectBy: 'datetime' | recenteWedstrijden">
+            <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td>{{match.division}}</td><td><span>{{match.team_home}}</span> - <span>{{match.team_away}}</span></td><td>{{match.result}}</td><td>{{match.location}}</td>
+        </tr>
+    </table>
+    </div>
+    
+    <h1>Sporta alle wedstrijden</h1>
+    <div class="sp-scrollable-table-wrapper">
             <table class="sp-data-table">
                 <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
-                <tr ng-repeat="match in D3wedstrijden | orderObjectBy: 'datetime'">
+                <tr ng-repeat="match in alleSportaWedstrijden | orderObjectBy: 'datetime' | recenteWedstrijden">
                     <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
                 </tr>
             </table>
@@ -92,10 +102,15 @@
     
     <h1>Alle alle wedstrijden</h1>
         <div class="sp-scrollable-table-wrapper">
+            <div>Sporta wedstrijden</div>
             <table class="sp-data-table">
-                <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
-                <tr ng-repeat="match in alleWedstrijden | orderObjectBy: 'datetime'">
-                    <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
+                <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th></tr>
+                <tr ng-repeat="match in alleSportaWedstrijden | orderObjectBy: 'datetime' | recenteWedstrijden">
+                    <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td ng-bind-html='match.division|trustAsHtml'>{{match.division}}</td><td><span ng-bind-html='match.team_home|trustAsHtml'>{{match.team_home}}</span> - <span ng-bind-html='match.team_away|trustAsHtml'>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td>
+                </tr>
+
+                <tr ng-repeat="match in alleGewestWedstrijden | orderObjectBy: 'datetime' | recenteWedstrijden">
+                    <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td>{{match.division}}</td><td><span>{{match.team_home}}</span> - <span>{{match.team_away}}</span></td><td>{{match.result}}</td>
                 </tr>
             </table>
         </div>

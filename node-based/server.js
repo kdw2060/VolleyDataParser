@@ -90,6 +90,7 @@ var sportaWedstrijden;
 var sportaRankings;
 var gewestWedstrijdenVcal;
 var gewestWedstrijdenJson = [];
+var alleGewest = {};
 var JU15wedstrijden;
 var MU15wedstrijden;
 var MU17wedstrijden;
@@ -185,25 +186,26 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
         var jcalData = ICAL.parse(gewestWedstrijdenVcal);
         var comp = new ICAL.Component(jcalData);
         var vevents = comp.getAllSubcomponents("vevent");
-        
+
         for (i=0; i < vevents.length; i++) {
             var event = new ICAL.Event(vevents[i]);
+                
                 var summary = event.summary;
-                    var matchday = event.startDate;
-                    var locatie = event.location;
-                    var datum = new Date(matchday);
-                    var wedstrijd = summary.split(": ").pop().capitalize();
-                    var teams = wedstrijd.split(' - ');
-                    var home = teams[0];
-                    var away = teams[1];
-                    for (j=0; j < 6 ; j++){
-                        if (event.summary.indexOf(reeksen[j]) > -1)
-                        var competitie = reeksen[j];
-                        }
-                    var uitslag = '';
-                    //naar eigen json-object omzetten
-                    var matchObject = new makeMatch(datum, competitie, home, away, uitslag, locatie);
-                gewestWedstrijdenJson.push(matchObject); 
+                var matchday = event.startDate;
+                var locatie = event.location;
+                var datum = new Date(matchday);
+                var wedstrijd = summary.split(": ").pop().capitalize();
+                var teams = wedstrijd.split(' - ');
+                var home = teams[0];
+                var away = teams[1];
+                for (j=0; j < 6 ; j++){
+                    if (event.summary.indexOf(reeksen[j]) > -1)
+                    var competitie = reeksen[j];
+                }
+                var uitslag = '';
+                //naar eigen json-object omzetten
+                var matchObject = new makeMatch(datum, competitie, home, away, uitslag, locatie);
+                gewestWedstrijdenJson.push(matchObject);
         }
         JU15wedstrijden = gewestWedstrijdenJson.filter(function (n, i){
             return n.division==='JU15';
@@ -224,10 +226,15 @@ request.get('http://www.volleyscores.be/calendar/club/11306', function (error, r
 });
 
 app.get('/api/alleWedstrijden', function (req, res) {
-    gewestWedstrijdenJson = JSON.stringify(gewestWedstrijdenJson);
-    alleWedstrijden = sportaWedstrijden.concat(gewestWedstrijdenJson);
+//    gewestWedstrijdenJson = JSON.stringify(gewestWedstrijdenJson);
+//    console.log(gewestWedstrijdenJson);
+//    alleGewest = gewestWedstrijdenJson.substring(1, gewestWedstrijdenJson.length-1);
+//    var alleSporta = sportaWedstrijden.substring(1, sportaWedstrijden.length-1);
+//    alleSporta = alleSporta + ',';
+//    console.log(alleGewest);
+//    alleWedstrijden = alleSporta.concat(alleGewest);
 //    console.log(alleWedstrijden);
-    res.status(200).json(alleWedstrijden);
+//    res.status(200).json(alleWedstrijden);
 });
 app.get('/api/sportaRankings', function (req, res) {
   res.status(200).json(sportaRankings);
