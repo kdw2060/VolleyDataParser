@@ -2,6 +2,11 @@
 //var webserverpad = "/ploegdata/"; 
 //pas bovenstaande waarde aan naar de map waar je op je webserver de bestanden geupload hebt en comment de volgende regel uit
 var webserverpad = "";
+var h2cal = ics();
+var h3cal = ics();
+var d3cal = ics();
+var d4cal = ics();
+var d5cal = ics();
 
 // Helper functies
 String.prototype.capitalize = function(){
@@ -86,6 +91,7 @@ function parseVcalToJson(data){
                     $scope.alleWedstrijden.push($scope.alleSportaWedstrijden2[i]);
                 }
             };
+            makeVcalFiles();
         }
         
         function getGewestData(){
@@ -243,7 +249,50 @@ function parseVcalToJson(data){
         }
             
         getAndProcessAll();
-
+        
+        //Vcal files maken voor de Sporta-ploegen
+        function makeVcalFiles() {
+            for (i=0; i < $scope.H2wedstrijden.length; i++) {
+                let wedstrijd = $scope.H2wedstrijden[i].team_home + ' - ' + $scope.H2wedstrijden[i].team_away;
+                let desc = '';
+                let loc = $scope.H2wedstrijden[i].location;
+                let begin = $scope.H2wedstrijden[i].datetime;
+                let end = begin;
+                h2cal.addEvent(wedstrijd, desc, loc, begin, end);
+            }
+            for (i=0; i < $scope.H3wedstrijden.length; i++) {
+                let wedstrijd = $scope.H3wedstrijden[i].team_home + ' - ' + $scope.H3wedstrijden[i].team_away;
+                let desc = '';
+                let loc = $scope.H3wedstrijden[i].location;
+                let begin = $scope.H3wedstrijden[i].datetime;
+                let end = begin;
+                h3cal.addEvent(wedstrijd, desc, loc, begin, end);
+            }
+            for (i=0; i < $scope.D3wedstrijden.length; i++) {
+                let wedstrijd = $scope.D3wedstrijden[i].team_home + ' - ' + $scope.D3wedstrijden[i].team_away;
+                let desc = '';
+                let loc = $scope.D3wedstrijden[i].location;
+                let begin = $scope.D3wedstrijden[i].datetime;
+                let end = begin;
+                d3cal.addEvent(wedstrijd, desc, loc, begin, end);
+            }
+            for (i=0; i < $scope.D4wedstrijden.length; i++) {
+                let wedstrijd = $scope.D4wedstrijden[i].team_home + ' - ' + $scope.D4wedstrijden[i].team_away;
+                let desc = '';
+                let loc = $scope.D4wedstrijden[i].location;
+                let begin = $scope.D4wedstrijden[i].datetime;
+                let end = begin;
+                d4cal.addEvent(wedstrijd, desc, loc, begin, end);
+            }
+            for (i=0; i < $scope.D5wedstrijden.length; i++) {
+                let wedstrijd = $scope.D5wedstrijden[i].team_home + ' - ' + $scope.D5wedstrijden[i].team_away;
+                let desc = '';
+                let loc = $scope.D5wedstrijden[i].location;
+                let begin = $scope.D5wedstrijden[i].datetime;
+                let end = begin;
+                d5cal.addEvent(wedstrijd, desc, loc, begin, end);
+            }
+        }
       });
         
     app.filter('orderObjectBy', function() {
@@ -283,3 +332,12 @@ function parseVcalToJson(data){
 //             jQuery('#hometeam').addClass('vet');
 //              }
 //        else {jQuery('#awayteam').addClass('vet');}
+
+
+//Acknowledgements
+//This project uses:
+//  ics.js - https://github.com/nwcell/ics.js -> to generate an ics file
+//  ical.js - https://github.com/mozilla-comm/ical.js/wiki -> to parse vcal/ical data to Json
+//  Moment - https://momentjs.com/ -> to parse, edit and create date objects
+//  Angular - https://angularjs.org/ -> to render all the data in tables
+//  an endless list of answers by various StackOverflow heroes
