@@ -3,7 +3,7 @@
   <head>
     <title>Wedstrijdentabel</title>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
-    <script src="ical.min.js"></script>
+    <script src="libraries/ics.deps.min.js"></script>
     <script src="scripts.js"></script>
   </head>
 
@@ -12,8 +12,8 @@
     <div class="sp-scrollable-table-wrapper">
     <table class="sp-data-table">
         <tr><th>Datum - tijdstip</th><th>Competitie</th><th>Wedstrijd</th><th>Uitslag</th><th>Plaats</th></tr>
-        <tr ng-repeat="match in JU15wedstrijden | orderObjectBy: 'datetime'">
-            <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td>{{match.division}}</td><td><span>{{match.team_home}}</span> - <span>{{match.team_away}}</span></td><td>{{match.result}}</td><td>{{match.location}}</td>
+        <tr ng-repeat="match in H1wedstrijden | orderObjectBy: 'datetime'">
+            <td>{{match.datetime | date:'dd-MM-yyyy H:mm' : 'CET'}}</td><td>{{match.division}}</td><td><span>{{match.team_home}}</span> - <span>{{match.team_away}}</span></td><td ng-bind-html='match.result|trustAsHtml'>{{match.result}}</td><td>{{match.location}}</td>
         </tr>
     </table>
     </div>

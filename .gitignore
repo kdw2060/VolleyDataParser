@@ -4,3 +4,13 @@ node_modules
 package-lock.json
 **/package-lock.json
 client/kopie-wedstrijden-aug18.html
+projectFiles/dames1.json
+*.xls
+projectFiles/dames2.json
+projectFiles/heren1.json
+projectFiles/ju15.json
+projectFiles/mu15.json
+projectFiles/OLD_for_reference_GewestAlleTeamkalendersProxy.php
+projectFiles/OLD_for_reference_H2proxy.php
+projectFiles/test.html
+projectFiles/libraries/php_xlsx_to_json/composer.lock

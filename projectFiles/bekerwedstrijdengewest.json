@@ -1,0 +1,29 @@
+[
+  {"Wedstrijdnr": "BvGASHG-03",
+   "Datum": "24/11/2018",
+   "Uur": "20:30",
+   "Reeks": "Beker (HGA)",
+   "Thuis": "Osta Heren 1",
+   "Bezoekers": "VC Syneton Duvel Puurs C",
+   "Uitslag": null,
+   "Sporthall": "Berchem - Rooi 2"
+},
+  {"Wedstrijdnr": "BvGASDG-12",
+  "Datum": "24/11/2018",
+  "Uur": "00:00",
+  "Reeks": "Beker (DGA)",
+  "Thuis": "Osta Dames 1",
+  "Bezoekers": "VC Gloval Wineries Kapellen A",
+  "Uitslag": null,
+  "Sporthall": "Berchem - Rooi 2"
+},
+  {"Wedstrijdnr": "",
+  "Datum": "",
+  "Uur": "",
+  "Reeks": "",
+  "Thuis": "",
+  "Bezoekers": "",
+  "Uitslag": "",
+  "Sporthall": ""
+}
+]

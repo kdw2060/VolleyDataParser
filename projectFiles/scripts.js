@@ -23,37 +23,46 @@ function makeMatch(id, dt, comp, home, away, rslt, loc) {
     this.result = rslt;
     this.location = loc;
 }
-
-// Functie om Volleyscores.be vcal-data om te zetten naar json
-var reeksen = ['JU15', 'MU15', 'D2GA', 'D3GA', 'H1GA'];
-function parseVcalToJson(data){
-        var jcalData = ICAL.parse(data);
-        var comp = new ICAL.Component(jcalData);
-        var vevents = comp.getAllSubcomponents("vevent");
-        var gewestWedstrijdenJson = [];
-
-            for (i=0; i < vevents.length; i++) {
-                var event = new ICAL.Event(vevents[i]);
-                    var id = event.uid;
-                    var summary = event.summary;
-                    var matchday = event.startDate;
-                    var locatie = event.location.slice(0, -7);
-                    var datum = new Date(matchday);
-                    var wedstrijd = summary.split(": ").pop().capitalize();
-                    var teams = wedstrijd.split(' - ');
-                    var home = teams[0];
-                    var away = teams[1];
-                    for (j=0; j < 6 ; j++){
-                        if (event.summary.indexOf(reeksen[j]) > -1)
-                        var competitie = reeksen[j];
-                        }
-                    var uitslag = '';
-                    //naar eigen json-object omzetten
-                    var matchObject = new makeMatch(id, datum, competitie, home, away, uitslag, locatie);
-                    gewestWedstrijdenJson.push(matchObject);
-            }
-        return gewestWedstrijdenJson;
+function hernoemGewestPloegen(matchObj){
+    if (matchObj.division === 'Heren 1e gewest Antwerpen') {
+        matchObj.division = 'H1GA';
+         if (matchObj.team_home === 'Osta Berchem') {matchObj.team_home = 'Osta Heren 1'}
+         if (matchObj.team_away === 'Osta Berchem') {matchObj.team_away = 'Osta Heren 1'}
+         }
+    if (matchObj.division === 'Dames 2de gewest Antwerpen B') {
+        matchObj.division = 'D2GA-B';
+        if (matchObj.team_home === 'Osta Berchem A') {matchObj.team_home = 'Osta Dames 1'}
+        if (matchObj.team_away === 'Osta Berchem A') {matchObj.team_away = 'Osta Dames 1'}
+                }
+    if (matchObj.division === 'Dames 3de gewest Antwerpen') {
+        matchObj.division = 'D3GA';
+        if (matchObj.team_home === 'Osta Berchem B') {matchObj.team_home = 'Osta Dames 2'}
+        if (matchObj.team_away === 'Osta Berchem B') {matchObj.team_away = 'Osta Dames 2'}
+        }
+    if (matchObj.division === 'Meisjes U15 Regionaal reeks 2') {
+        matchObj.division = 'MU15 Regionaal reeks 2';
+        if (matchObj.team_home === 'OSTA BERCHEM') {matchObj.team_home = 'Osta Meisjes U15'}
+        if (matchObj.team_away === 'OSTA BERCHEM') {matchObj.team_away = 'Osta Meisjes U15'}
+        }
+    if (matchObj.division === 'Jongens U15 Regionaal reeks 1  ') {
+        matchObj.division = 'JU15 Regionaal reeks 1';
+        if (matchObj.team_home === 'OSTA BERCHEM (bc)') {matchObj.team_home = 'Osta Jongens U15'}
+        if (matchObj.team_away === 'OSTA BERCHEM (cc)') {matchObj.team_away = 'Osta Jongens U15'}
+        }
+}
+function styleUitslagen(matchObj) {
+    if (matchObj.result != null) {
+        let uitslagParts = matchObj.result.split(" - ");
+        let thuis = matchObj.team_home;
+        let uit = matchObj.team_away;
+        if ((uitslagParts[0] == 3 && thuis.includes('Osta')) || (uitslagParts[1] == 3 && uit.includes('Osta')) ){
+            matchObj.result = '<span class="badge win">' + matchObj.result + '</span>';
+        }
+        else {
+            matchObj.result = '<span class="badge loss">' + matchObj.result + '</span>';
+        }
     }
+}
 
 // Angular functies
     var app = angular.module("app", []);
@@ -73,13 +82,19 @@ function parseVcalToJson(data){
         $scope.alleSportaWedstrijden = [];
         $scope.alleSportaWedstrijden2 = [];
         $scope.alleWedstrijden = [];
+        $scope.Onedone;
+        $scope.Twodone;
+        $scope.Threedone;
+        $scope.Fourdone;
+        $scope.Fivedone;
+        $scope.Sixdone;
         $scope.ready1;
         $scope.ready2;
         
         function getAndProcessAll() {
             console.log('getAll functie gestart');   
-            getGewestData();
             getSportaData();
+            getAndProcessGewestData();
         }
         
         function joinData() {
@@ -94,54 +109,60 @@ function parseVcalToJson(data){
             makeVcalFiles();
         }
         
-        function getGewestData(){
-            //Data gewest-ploegen ophalen
-            console.log('gewest ophalen gestart');
-            $http.get(webserverpad + "GewestAlleTeamkalendersProxy.php").then(function(data){
-                processGewestData(data);
-            });
-        }
+        function getAndProcessGewestData() {
+            let jsonfiles = ['heren1.json', 'dames1.json', 'dames2.json', 'mu15.json', 'ju15.json', 'bekerwedstrijdengewest.json'];
+
+            //https://stackoverflow.com/questions/26100329/xhr-response-with-for-loop-not-working?lq=1    
+
+            for (i = 0; i < jsonfiles.length; i++) {
+                (function(index, files) {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.open('GET', webserverpad + files[index], true);
+                xobj.onreadystatechange = function () {
+                      if (xobj.readyState == 4 && xobj.status == "200") {
+                        let data = JSON.parse(xobj.responseText);
+                        for (j=0; j < data.length; j++) {
+                            var dateParts = data[j].Datum.split("/");
+                            var timeParts = data[j].Uur.split(":");
+                            var dateObj = new Date(dateParts[2], dateParts[1] -1,dateParts[0],timeParts[0], timeParts[1],0);                        
+                            var matchObject = new makeMatch(data[j].Wedstrijdnr, dateObj, data[j].Reeks, data[j].Thuis, data[j].Bezoekers, data[j].Uitslag, data[j].Sporthall);
+                            hernoemGewestPloegen(matchObject);
+                            styleUitslagen(matchObject);
+                            $scope.alleGewestWedstrijden.push(matchObject);
+                        };
+                        if (index == 0) {$scope.Onedone = true}
+                        if (index == 1) {$scope.Twodone = true}
+                        if (index == 2) {$scope.Threedone = true}
+                        if (index == 3) {$scope.Fourdone = true}
+                        if (index == 4) {$scope.Fivedone = true}
+                        if (index == 5) {$scope.Sixdone = true;}
+                        
+                        if ($scope.Onedone && $scope.Twodone && $scope.Threedone && $scope.Fourdone && $scope.Fivedone && $scope.Sixdone) {
+                            console.log('alle json files geladen');
+                            filterGewestData();
+                        }
+                      }
+                };
+                xobj.send(null);
+                })(i, jsonfiles)
+                }
+            };
         
-        function processGewestData(res) {
-            //vcaldata parsen
-            var wedstrijdenJson = parseVcalToJson(res.data);            
-            //ploegen hernoemen
-            wedstrijdenJson = wedstrijdenJson.filter(function (n){
-                if (n.division === 'H1GA') {
-                    if (n.team_home === 'Osta Berchem') {n.team_home = 'Osta Heren 1'}
-                    if (n.team_away === 'Osta Berchem') {n.team_away = 'Osta Heren 1'}
-                }
-                if (n.division === 'D2GA') {
-                    if (n.team_home === 'Osta Berchem A') {n.team_home = 'Osta Dames 1'}
-                    if (n.team_away === 'Osta Berchem A') {n.team_away = 'Osta Dames 1'}
-                }
-                if (n.division === 'D3GA') {
-                    if (n.team_home === 'Osta Berchem B') {n.team_home = 'Osta Dames 2'}
-                    if (n.team_away === 'Osta Berchem B') {n.team_away = 'Osta Dames 2'}
-                }
-                if (n.division === 'MU15') {
-                    if (n.team_home === 'Osta Berchem') {n.team_home = 'Osta Meisjes U15'}
-                    if (n.team_away === 'Osta Berchem') {n.team_away = 'Osta Meisjes U15'}
-                }
-                if (n.division === 'JU15') {
-                    if (n.team_home === 'Osta Berchem (Bc)') {n.team_home = 'Osta Jongens U15'}
-                    if (n.team_away === 'Osta Berchem (Bc)') {n.team_away = 'Osta Jongens U15'}
-                }
-                return n;
-            })
-            //einde hernoemen
-            $scope.alleGewestWedstrijden = wedstrijdenJson;
+        function filterGewestData() {
             //filteren per ploeg
-            $scope.H1wedstrijden = wedstrijdenJson.filter(function (n){
-                return n.division==='H1GA';});
-            $scope.D1wedstrijden = wedstrijdenJson.filter(function (n){
-                return n.division==='D2GA';});
-            $scope.D2wedstrijden = wedstrijdenJson.filter(function (n){
+            $scope.H1wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
+                 if (n.division==='H1GA' || n.division==='Beker (HGA)') {return n;}
+            });
+            $scope.D1wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
+                if (n.division==='D2GA-B' || n.division==='Beker (DGA)'){return n;}
+            });
+            $scope.D2wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
                 return n.division==='D3GA';});
-            $scope.MU15wedstrijden = wedstrijdenJson.filter(function (n){
-                return n.division==='MU15';});
-            $scope.JU15wedstrijden = wedstrijdenJson.filter(function (n){
-                return n.division==='JU15';});
+            $scope.MU15wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
+                return n.division==='MU15 Regionaal reeks 2';});
+            $scope.JU15wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
+                return n.division==='JU15 Regionaal reeks 1';});
             $scope.ready1 = true;            
             console.log('process Gewest klaar');
             joinData();
@@ -215,6 +236,8 @@ function parseVcalToJson(data){
                 if (locatie == 'VEN') {locatie = 'Sporthal Vennebos, Hoevedreef, Schilde'}
                 //einde hernoemen sporthalcodes
                 var matchObject = new makeMatch(id, datum, competitie, home, away, uitslag, locatie);
+                if (matchObject.result == '') {matchObject.result = null;}
+                styleUitslagen(matchObject);
                 $scope.alleSportaWedstrijden2.push(matchObject);
             });
             //filteren per ploeg
@@ -247,8 +270,6 @@ function parseVcalToJson(data){
             console.log('process Sporta klaar');
             joinData();
         }
-            
-        getAndProcessAll();
         
         //Vcal files maken voor de Sporta-ploegen
         function makeVcalFiles() {
@@ -293,6 +314,8 @@ function parseVcalToJson(data){
                 d5cal.addEvent(wedstrijd, desc, loc, begin, end);
             }
         }
+        
+        getAndProcessAll();
       });
         
     app.filter('orderObjectBy', function() {
@@ -323,7 +346,6 @@ function parseVcalToJson(data){
       };
     });
 
-
 // TODO: ergens iets maken om winnaar vet te zetten
 //        var uitslagParts = uitslag.split(" - ");
 //        var part1 = uitslagParts[0];
@@ -334,10 +356,43 @@ function parseVcalToJson(data){
 //        else {jQuery('#awayteam').addClass('vet');}
 
 
+// Functie om Volleyscores.be vcal-data om te zetten naar json | ter referentie - niet meer in gebruik
+//var reeksen = ['JU15', 'MU15', 'D2GA', 'D3GA', 'H1GA'];
+//function parseVcalToJson(data){
+//        var jcalData = ICAL.parse(data);
+//        var comp = new ICAL.Component(jcalData);
+//        var vevents = comp.getAllSubcomponents("vevent");
+//        var gewestWedstrijdenJson = [];
+//
+//            for (i=0; i < vevents.length; i++) {
+//                var event = new ICAL.Event(vevents[i]);
+//                    var id = event.uid;
+//                    var summary = event.summary;
+//                    var matchday = event.startDate;
+//                    var locatie = event.location.slice(0, -7);
+//                    var datum = new Date(matchday);
+//                    var wedstrijd = summary.split(": ").pop().capitalize();
+//                    var teams = wedstrijd.split(' - ');
+//                    var home = teams[0];
+//                    var away = teams[1];
+//                    for (j=0; j < 6 ; j++){
+//                        if (event.summary.indexOf(reeksen[j]) > -1)
+//                        var competitie = reeksen[j];
+//                        }
+//                    var uitslag = '';
+//                    //naar eigen json-object omzetten
+//                    var matchObject = new makeMatch(id, datum, competitie, home, away, uitslag, locatie);
+//                    gewestWedstrijdenJson.push(matchObject);
+//            }
+//        return gewestWedstrijdenJson;
+//    }
+
+
 //Acknowledgements
 //This project uses:
 //  ics.js - https://github.com/nwcell/ics.js -> to generate an ics file
-//  ical.js - https://github.com/mozilla-comm/ical.js/wiki -> to parse vcal/ical data to Json
+//  php_xlsx_to_json - https://github.com/antonshell/php_xlsx_to_json
+//  ical.js - https://github.com/mozilla-comm/ical.js/wiki -> to parse vcal/ical data to Json (no longer used)
 //  Moment - https://momentjs.com/ -> to parse, edit and create date objects
 //  Angular - https://angularjs.org/ -> to render all the data in tables
 //  an endless list of answers by various StackOverflow heroes
