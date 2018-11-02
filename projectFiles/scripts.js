@@ -346,15 +346,6 @@ function styleUitslagen(matchObj) {
       };
     });
 
-// TODO: ergens iets maken om winnaar vet te zetten
-//        var uitslagParts = uitslag.split(" - ");
-//        var part1 = uitslagParts[0];
-//        var part2 = uitslagParts[1];
-//        if (part1 > part2) {
-//             jQuery('#hometeam').addClass('vet');
-//              }
-//        else {jQuery('#awayteam').addClass('vet');}
-
 
 // Functie om Volleyscores.be vcal-data om te zetten naar json | ter referentie - niet meer in gebruik
 //var reeksen = ['JU15', 'MU15', 'D2GA', 'D3GA', 'H1GA'];
