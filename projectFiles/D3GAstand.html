@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wedstrijdentabel</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+    <script src="libraries/ics.deps.min.js"></script>
+    <script src="scripts.js"></script>
+  </head>
+
+    
+<body ng-app="app" ng-controller="MainController">
+    <div class="sp-scrollable-table-wrapper">
+    <table class="sp-data-table">
+        <tr><th>Plaats</th><th>Ploeg</th><th>W</th><th>3-0 of 3/1</th><th>3-2</th><th>0-3 of 1-3</th><th>2-3</th><th>WS</th><th>VS</th><th>FF</th><th>Punten</th></tr>
+        <tr ng-repeat="ploeg in D3GAstand">
+            <td>{{$index +1}}</td><td>{{ploeg.Ploeg}}</td><td>{{ploeg["# Wed"]}}</td><td>{{ploeg["Gew. 3-0\/3-1"]}}</td><td>{{ploeg["Gew. 3-2"]}}</td><td>{{ploeg["Verl. 3-0\/3-1"]}}</td><td>{{ploeg["Verl. 3-2"]}}</td><td>{{ploeg["Gew. sets"]}}</td><td>{{ploeg["Verl. sets"]}}</td><td>{{ploeg.Forfaits}}</td><td>{{ploeg.Ptn}}</td>
+        </tr>
+    </table>
+    </div>
+</body>
+</html>
