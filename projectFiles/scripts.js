@@ -67,7 +67,7 @@ function styleUitslagen(matchObj) {
 // Angular functies
     var app = angular.module("app", []);
 
-    app.controller('MainController', function ($scope, $http) {
+    app.controller('MainController', function ($scope, $http, $rootScope) {
         $scope.H1wedstrijden = [];
         $scope.H2wedstrijden = [];
         $scope.H3wedstrijden = [];
@@ -82,17 +82,6 @@ function styleUitslagen(matchObj) {
         $scope.alleSportaWedstrijden = [];
         $scope.alleSportaWedstrijden2 = [];
         $scope.alleWedstrijden = [];
-        $scope.SportaCompetitiestanden = [];
-        $scope.SportaH3B = [];
-        $scope.SportaH4A = [];
-        $scope.SportaD4B = [];
-        $scope.SportaD5A = [];
-        $scope.SportaD5B = [];
-        $scope.H1GAstand = [];
-        $scope.D2GABstand = [];
-        $scope.D3GAstand = [];
-        $scope.MU15stand = [];
-        $scope.JU15stand = [];
         $scope.Onedone;
         $scope.Twodone;
         $scope.Threedone;
@@ -123,8 +112,6 @@ function styleUitslagen(matchObj) {
         function getAndProcessGewestData() {
             let jsonfiles = ['heren1.json', 'dames1.json', 'dames2.json', 'mu15.json', 'ju15.json', 'bekerwedstrijdengewest.json'];
             
-            let jsonfiles_stand = ["H1GA.json", "D2GAB.json", "D3GA.json", "MU15stand.json", "JU15stand.json"];
-
             //https://stackoverflow.com/questions/26100329/xhr-response-with-for-loop-not-working?lq=1    
 
             for (i = 0; i < jsonfiles.length; i++) {
@@ -160,42 +147,6 @@ function styleUitslagen(matchObj) {
                 xobj.send(null);
                 })(i, jsonfiles)
                 }
-            
-            function laadRankingFiles(bestand) {
-                var xobj2 = new XMLHttpRequest();
-                xobj2.overrideMimeType("application/json");
-                xobj2.open('GET', webserverpad + bestand, true);
-                xobj2.onreadystatechange = function () {
-                    if (xobj2.readyState == 4 && xobj2.status == "200") {
-                        let data = JSON.parse(xobj2.responseText);
-                        if (bestand == "H1GA.json") {
-                            $scope.H1GAstand = data;
-                            $scope.H1GAstand.splice(0,1);
-                        }
-                        if (bestand == "D2GAB.json") {
-                            $scope.D2GABstand = data;
-                            $scope.D2GABstand.splice(0,1);
-                        }
-                        if (bestand == "D3GA.json") {
-                            $scope.D3GAstand = data;
-                            $scope.D3GAstand.splice(0,1);
-                        }
-                        if (bestand == "MU15stand.json") {
-                            $scope.MU15stand = data;
-                            $scope.MU15stand.splice(0,1);
-                        }
-                        if (bestand == "JU15stand.json") {
-                            $scope.JU15stand = data;
-                            $scope.JU15stand.splice(0,1);
-                        }
-                    }
-                };
-                xobj2.send(null);
-            }
-            
-            for (i = 0; i < jsonfiles_stand.length; i++) {
-                laadRankingFiles(jsonfiles_stand[i]);
-                }
             };
         
         function filterGewestData() {
@@ -223,24 +174,8 @@ function styleUitslagen(matchObj) {
             $http.get(webserverpad + "SportaAlleTeamkalendersProxy.php").then(function(data){
                 processSportaData(data);
             });
-            console.log('sporta rangschikkingen ophalen gestart');
-            $http.get(webserverpad + "SportaCompetitiestandenProxy.php").then(function(data){
-                processSportaData2(data);
-            });
         }
         
-        function processSportaData2(res) {
-            var data = res.data;
-            var arr = [];
-            for (var x in data) {arr.push(data[x]);};
-            $scope.SportaCompetitiestanden = arr;
-            //filteren per ploeg/competitie
-            $scope.SportaH3B = $scope.SportaCompetitiestanden[11].standing;           
-            $scope.SportaH4A = $scope.SportaCompetitiestanden[12].standing;
-            $scope.SportaD4B = $scope.SportaCompetitiestanden[5].standing;
-            $scope.SportaD5A = $scope.SportaCompetitiestanden[6].standing; 
-            $scope.SportaD5B = $scope.SportaCompetitiestanden[7].standing;
-        }
         function processSportaData(res){
             $scope.alleSportaWedstrijden = res.data;
             //datum van string naar datumobject converteren
@@ -382,6 +317,80 @@ function styleUitslagen(matchObj) {
         
         getAndProcessAll();
       });
+
+    app.controller('RankingsController', function ($scope, $http, $rootScope){
+        $scope.SportaCompetitiestanden = [];
+        $scope.SportaH3B = [];
+        $scope.SportaH4A = [];
+        $scope.SportaD4B = [];
+        $scope.SportaD5A = [];
+        $scope.SportaD5B = [];
+        $scope.H1GAstand = [];
+        $scope.D2GABstand = [];
+        $scope.D3GAstand = [];
+        $scope.MU15stand = [];
+        $scope.JU15stand = [];
+        
+        function getAllRankings(){
+            let jsonfiles_stand = ["H1GA.json", "D2GAB.json", "D3GA.json", "MU15stand.json", "JU15stand.json"];
+            
+            function laadRankingFiles(bestand) {
+                var xobj2 = new XMLHttpRequest();
+                xobj2.overrideMimeType("application/json");
+                xobj2.open('GET', webserverpad + bestand, true);
+                xobj2.onreadystatechange = function () {
+                    if (xobj2.readyState == 4 && xobj2.status == "200") {
+                        let data = JSON.parse(xobj2.responseText);
+                        if (bestand == "H1GA.json") {
+                            $scope.H1GAstand = data;
+                            $scope.H1GAstand.splice(0,1);
+                        }
+                        if (bestand == "D2GAB.json") {
+                            $scope.D2GABstand = data;
+                            $scope.D2GABstand.splice(0,1);
+                        }
+                        if (bestand == "D3GA.json") {
+                            $scope.D3GAstand = data;
+                            $scope.D3GAstand.splice(0,1);
+                        }
+                        if (bestand == "MU15stand.json") {
+                            $scope.MU15stand = data;
+                            $scope.MU15stand.splice(0,1);
+                        }
+                        if (bestand == "JU15stand.json") {
+                            $scope.JU15stand = data;
+                            $scope.JU15stand.splice(0,1);
+                        }
+                    }
+                };
+                xobj2.send(null);
+            }
+        
+        for (i = 0; i < jsonfiles_stand.length; i++) {
+            laadRankingFiles(jsonfiles_stand[i]);
+            console.log('gewest rankings ophalen');
+            }
+        }
+        
+        console.log('sporta rankings ophalen gestart');
+        $http.get(webserverpad + "SportaCompetitiestandenProxy.php").then(function(data){
+            processSportaData2(data);
+        });
+        
+        function processSportaData2(res) {
+            var data = res.data;
+            var arr = [];
+            for (var x in data) {arr.push(data[x]);};
+            $scope.SportaCompetitiestanden = arr;
+            //filteren per ploeg/competitie
+            $scope.SportaH3B = $scope.SportaCompetitiestanden[11].standing;           
+            $scope.SportaH4A = $scope.SportaCompetitiestanden[12].standing;
+            $scope.SportaD4B = $scope.SportaCompetitiestanden[5].standing;
+            $scope.SportaD5A = $scope.SportaCompetitiestanden[6].standing; 
+            $scope.SportaD5B = $scope.SportaCompetitiestanden[7].standing;
+        }
+        getAllRankings();
+    });
         
     app.filter('orderObjectBy', function() {
       return function(items, field, reverse) {
