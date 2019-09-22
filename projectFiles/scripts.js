@@ -24,28 +24,38 @@ function makeMatch(id, dt, comp, home, away, rslt, loc) {
     this.location = loc;
 }
 function hernoemGewestPloegen(matchObj){
-    if (matchObj.division === 'Heren 1e gewest Antwerpen') {
-        matchObj.division = 'H1GA';
-         if (matchObj.team_home === 'Osta Berchem') {matchObj.team_home = 'Osta Heren 1'}
-         if (matchObj.team_away === 'Osta Berchem') {matchObj.team_away = 'Osta Heren 1'}
+    if (matchObj.division === 'Heren 3de Provinciale B') {
+        matchObj.division = 'H3PB';
+         if (matchObj.team_home === 'OSTA BERCHEM') {matchObj.team_home = 'Osta Heren 1'}
+         if (matchObj.team_away === 'OSTA BERCHEM') {matchObj.team_away = 'Osta Heren 1'}
          }
     if (matchObj.division === 'Dames 2de gewest Antwerpen B') {
         matchObj.division = 'D2GA-B';
-        if (matchObj.team_home === 'Osta Berchem A') {matchObj.team_home = 'Osta Dames 1'}
-        if (matchObj.team_away === 'Osta Berchem A') {matchObj.team_away = 'Osta Dames 1'}
+        if (matchObj.team_home === 'OSTA BERCHEM A') {matchObj.team_home = 'Osta Dames 1'}
+        if (matchObj.team_away === 'OSTA BERCHEM A') {matchObj.team_away = 'Osta Dames 1'}
                 }
-    if (matchObj.division === 'Dames 3de gewest Antwerpen') {
-        matchObj.division = 'D3GA';
-        if (matchObj.team_home === 'Osta Berchem B') {matchObj.team_home = 'Osta Dames 2'}
-        if (matchObj.team_away === 'Osta Berchem B') {matchObj.team_away = 'Osta Dames 2'}
+    if (matchObj.division === 'Dames 2de gewest Antwerpen A') {
+        matchObj.division = 'D2GA-A';
+        if (matchObj.team_home === 'OSTA BERCHEM B') {matchObj.team_home = 'Osta Dames 2'}
+        if (matchObj.team_away === 'OSTA BERCHEM B') {matchObj.team_away = 'Osta Dames 2'}
         }
-    if (matchObj.division === 'Meisjes U15 Regionaal reeks 2') {
-        matchObj.division = 'MU15 Regionaal reeks 2';
-        if (matchObj.team_home === 'OSTA BERCHEM') {matchObj.team_home = 'Osta Meisjes U15'}
-        if (matchObj.team_away === 'OSTA BERCHEM') {matchObj.team_away = 'Osta Meisjes U15'}
+    if (matchObj.division === 'Beker van het gewest Antwerpen Dames Gewestelijk') {
+        matchObj.division = 'Beker DG';
+        if (matchObj.team_home === 'OSTA BERCHEM A (2G)') {matchObj.team_home = 'Osta Dames 1'}
+        if (matchObj.team_away === 'OSTA BERCHEM A (2G)') {matchObj.team_away = 'Osta Dames 1'}
+        if (matchObj.team_home === 'OSTA BERCHEM B (2G)') {matchObj.team_home = 'Osta Dames 2'}
+        if (matchObj.team_away === 'OSTA BERCHEM B (2G)') {matchObj.team_away = 'Osta Dames 2'}
         }
-    if (matchObj.division === 'Jongens U15 Regionaal reeks 1  ') {
-        matchObj.division = 'JU15 Regionaal reeks 1';
+    if (matchObj.division === 'Beker van Antwerpen Seniors Heren') {
+        matchObj.division = 'Beker';
+    }
+    if (matchObj.division === 'Meisjes U15 Regionaal Reeks 3') {
+        matchObj.division = 'MU15 RR3';
+        if (matchObj.team_home === 'OSTA BERCHEM BC') {matchObj.team_home = 'Osta Meisjes U15'}
+        if (matchObj.team_away === 'OSTA BERCHEM BC') {matchObj.team_away = 'Osta Meisjes U15'}
+        }
+    if (matchObj.division === 'Jongens U15 Regionaal  ') {
+        matchObj.division = 'JU15 Regionaal';
         if (matchObj.team_home === 'OSTA BERCHEM (bc)') {matchObj.team_home = 'Osta Jongens U15'}
         if (matchObj.team_away === 'OSTA BERCHEM (cc)') {matchObj.team_away = 'Osta Jongens U15'}
         }
@@ -88,29 +98,29 @@ function styleUitslagen(matchObj) {
         $scope.Fourdone;
         $scope.Fivedone;
         $scope.Sixdone;
+        $scope.Sevendone;
+        $scope.Eightdone;
         $scope.ready1;
         $scope.ready2;
         
         function getAndProcessAll() {
-            console.log('getAll functie gestart');   
             getSportaData();
             getAndProcessGewestData();
         }
         
         function joinData() {
             if ($scope.ready1 && $scope.ready2) { 
-                console.log('samenvoegen gestart');
                 //data gewest en sporta samenvoegen in 1 array
                 $scope.alleWedstrijden = $scope.alleGewestWedstrijden;
-                for (i = 0 ; i < $scope.alleSportaWedstrijden2.length; i++) {
-                    $scope.alleWedstrijden.push($scope.alleSportaWedstrijden2[i]);
+                for (i = 0 ; i < $scope.alleSportaWedstrijden2.length; i++) { $scope.alleWedstrijden.push($scope.alleSportaWedstrijden2[i]);
                 }
+                console.log('samenvoegen gedaan');
+                makeVcalFiles();
             };
-            makeVcalFiles();
         }
         
         function getAndProcessGewestData() {
-            let jsonfiles = ['heren1.json', 'dames1.json', 'dames2.json', 'mu15.json', 'ju15.json', 'bekerwedstrijdengewest.json'];
+            let jsonfiles = ['heren1.json', 'heren1beker.json', 'dames1.json', 'dames1beker.json', 'dames2.json', 'dames2beker.json', 'mu15.json', 'ju15.json'];
             
             //https://stackoverflow.com/questions/26100329/xhr-response-with-for-loop-not-working?lq=1    
 
@@ -137,8 +147,10 @@ function styleUitslagen(matchObj) {
                         if (index == 3) {$scope.Fourdone = true}
                         if (index == 4) {$scope.Fivedone = true}
                         if (index == 5) {$scope.Sixdone = true;}
+                        if (index == 6) {$scope.Sevendone = true;}
+                        if (index == 7) {$scope.Eightdone = true;}
                         
-                        if ($scope.Onedone && $scope.Twodone && $scope.Threedone && $scope.Fourdone && $scope.Fivedone && $scope.Sixdone) {
+                        if ($scope.Onedone && $scope.Twodone && $scope.Threedone && $scope.Fourdone && $scope.Fivedone && $scope.Sixdone && $scope.Sevendone && $scope.Eightdone) {
                             console.log('alle json files geladen');
                             filterGewestData();
                         }
@@ -152,17 +164,18 @@ function styleUitslagen(matchObj) {
         function filterGewestData() {
             //filteren per ploeg
             $scope.H1wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
-                 if (n.division==='H1GA' || n.division==='Beker (HGA)') {return n;}
+                 if (n.division==='H3PB' || n.division==='Beker') {return n;}
             });
             $scope.D1wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
-                if (n.division==='D2GA-B' || n.division==='Beker (DGA)'){return n;}
+                if (n.team_away === 'Osta Dames 1' || n.team_home === 'Osta Dames 1'){return n;}
             });
             $scope.D2wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
-                return n.division==='D3GA';});
+                if (n.team_away === 'Osta Dames 2' || n.team_home === 'Osta Dames 2'){return n;}
+            });
             $scope.MU15wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
-                return n.division==='MU15 Regionaal reeks 2';});
+                return n.division==='MU15 RR3';});
             $scope.JU15wedstrijden = $scope.alleGewestWedstrijden.filter(function (n){
-                return n.division==='JU15 Regionaal reeks 1';});
+                return n.division==='JU15 Regionaal';});
             $scope.ready1 = true;            
             console.log('process Gewest klaar');
             joinData();
@@ -170,7 +183,6 @@ function styleUitslagen(matchObj) {
         
         function getSportaData(){
             //Data sporta-ploegen ophalen
-            console.log('sporta kalenders ophalen gestart');
             $http.get(webserverpad + "SportaAlleTeamkalendersProxy.php").then(function(data){
                 processSportaData(data);
             });
@@ -198,16 +210,22 @@ function styleUitslagen(matchObj) {
                 var uitslag = cleanUitslag;
                 var locatie = value.location;
                 //ploegen hernoemen
-                if (competitie == '<span title=\"HEREN 3B\">H3B</span>' && home.includes('Osta Berchem 1')) {home = 'Osta Heren 2';}
-                if (competitie == '<span title=\"HEREN 3B\">H3B</span>' && away.includes('Osta Berchem 1')) {away = 'Osta Heren 2';}
-                if (competitie == '<span title=\"HEREN 4A\">H4A</span>' && home.includes('Osta Berchem 2')) {home = 'Osta Heren 3';}
-                if (competitie == '<span title=\"HEREN 4A\">H4A</span>' && away.includes('Osta Berchem 2')) {away = 'Osta Heren 3';}
-                if (competitie == '<span title=\"DAMES 4B\">D4B</span>' && home.includes('Osta Berchem 1')) {home = 'Osta Dames 3';}
-                if (competitie == '<span title=\"DAMES 4B\">D4B</span>' && away.includes('Osta Berchem 1')) {away = 'Osta Dames 3';}
-                if (competitie == '<span title=\"DAMES 5A\">D5A</span>' && home.includes('Osta Berchem 2')) {home = 'Osta Dames 4';}
-                if (competitie == '<span title=\"DAMES 5A\">D5A</span>' && away.includes('Osta Berchem 2')) {away = 'Osta Dames 4';}
-                if (competitie == '<span title=\"DAMES 5B\">D5B</span>' && home.includes('Osta Berchem 3')) {home = 'Osta Dames 5';}
-                if (competitie == '<span title=\"DAMES 5B\">D5B</span>' && away.includes('Osta Berchem 3')) {away = 'Osta Dames 5';}
+                if (competitie == '<span title=\"Heren 3B\">H3B</span>' && home.includes('Osta Berchem 1')) {home = 'Osta Heren 2';}
+                if (competitie == '<span title=\"Heren 3B\">H3B</span>' && away.includes('Osta Berchem 1')) {away = 'Osta Heren 2';}
+                if (home.includes('Osta Berchem 1 (H3B)')) {home = 'Osta Heren 2';}
+                if (away.includes('Osta Berchem 1 (H3B)')) {away = 'Osta Heren 2';}
+                if (competitie == '<span title=\"Heren 3A\">H3A</span>' && home.includes('Osta Berchem 2')) {home = 'Osta Heren 3';}
+                if (competitie == '<span title=\"Heren 3A\">H3A</span>' && away.includes('Osta Berchem 2')) {away = 'Osta Heren 3';}
+                if (home.includes('Osta Berchem 2 (H3A)')) {home = 'Osta Heren 3';}
+                if (away.includes('Osta Berchem 2 (H3A)')) {away = 'Osta Heren 3';}
+                if (competitie == '<span title=\"Dames 5B\">D5B</span>' && home.includes('Osta Berchem 1')) {home = 'Osta Dames 3';}
+                if (competitie == '<span title=\"Dames 5B\">D5B</span>' && away.includes('Osta Berchem 1')) {away = 'Osta Dames 3';}
+                if (home.includes('Osta Berchem 1 (D5B)')) {home = 'Osta Dames 3';}
+                if (away.includes('Osta Berchem 1 (D5B)')) {away = 'Osta Dames 3';}
+                if (competitie == '<span title=\"Dames 5A\">D5A</span>' && home.includes('Osta Berchem 2')) {home = 'Osta Dames 4';}
+                if (competitie == '<span title=\"Dames 5A\">D5A</span>' && away.includes('Osta Berchem 2')) {away = 'Osta Dames 4';}
+                if (competitie == '<span title=\"Dames 5B\">D5B</span>' && home.includes('Osta Berchem 3')) {home = 'Osta Dames 5';}
+                if (competitie == '<span title=\"Dames 5B\">D5B</span>' && away.includes('Osta Berchem 3')) {away = 'Osta Dames 5';}
                 //einde hernoemen ploegen
                 //Sporthalcodes hernoemen
                 if (locatie == 'BER2') {locatie = 'Sporthal Rooi 2 - Berchem'}
@@ -234,6 +252,9 @@ function styleUitslagen(matchObj) {
                 if (locatie == 'PLA') {locatie = 'De Plaon, Eksterstraat 100, Mechelen'}
                 if (locatie == 'PUU') {locatie = 'De Kollebloem, Kloosterhof 1, Puurs'}
                 if (locatie == 'VEN') {locatie = 'Sporthal Vennebos, Hoevedreef, Schilde'}
+                if (locatie == 'GLSB') {locatie = 'Gem. Lagere School, Lostraat 51, Broechem'}
+                if (locatie == 'OCL1') {locatie = 'De Witte Merel, Liersesteenweg 25, Lint'}
+                if (locatie == 'SBR') {locatie = 'Domein Breeven, Barelstraat 111, Bornem'}
                 //einde hernoemen sporthalcodes
                 var matchObject = new makeMatch(id, datum, competitie, home, away, uitslag, locatie);
                 if (matchObject.result == '') {matchObject.result = null;}
@@ -242,29 +263,23 @@ function styleUitslagen(matchObj) {
             });
             //filteren per ploeg
             $scope.H2wedstrijden = $scope.alleSportaWedstrijden2.filter(function (n){
-                if (n.division==='<span title=\"HEREN 3B\">H3B</span>' || n.division==='<span title=\"Heren Lager\">HL<\/span>' && (n.team_home.includes('Osta Berchem 1') || n.team_away.includes('Osta Berchem 1'))) {
+                if (n.division==='<span title=\"Heren 3B\">H3B</span>' || n.division==='<span title=\"Heren Lager\">HL<\/span>' && (n.team_home.includes('Osta Heren 2') || n.team_away.includes('Osta Heren 2'))) {
                     return n;
                 }
             });
             $scope.H3wedstrijden = $scope.alleSportaWedstrijden2.filter(function (n){
-               if (n.division==='<span title=\"HEREN 4A\">H4A</span>' || n.division==='<span title=\"Heren Lager\">HL<\/span>' && (n.team_home.includes('Osta Berchem 2') || n.team_away.includes('Osta Berchem 2'))) {
+               if (n.division==='<span title=\"Heren 3A\">H3A</span>' || n.division==='<span title=\"Heren Lager\">HL<\/span>' && (n.team_home.includes('Osta Heren 3') || n.team_away.includes('Osta Heren 3'))) {
                     return n;
                 }
             });
             $scope.D3wedstrijden = $scope.alleSportaWedstrijden2.filter(function (n){
-               if (n.division==='<span title=\"DAMES 4B\">D4B</span>' || n.division==='<span title=\"Dames Lager\">DL<\/span>' && (n.team_home.includes('Osta Berchem 1') || n.team_away.includes('Osta Berchem 1'))) {
-                    return n;
-                }
+                if (n.team_home.includes('Osta Dames 3') ||  n.team_away.includes('Osta Dames 3')) {return n;}
             });
             $scope.D4wedstrijden = $scope.alleSportaWedstrijden2.filter(function (n){
-                if (n.division==='<span title=\"DAMES 5A\">D5A</span>' || n.division==='<span title=\"Dames Lager\">DL<\/span>' && (n.team_home.includes('Osta Berchem 2') || n.team_away.includes('Osta Berchem 2'))) {
-                    return n;
-                }
+                if (n.team_home.includes('Osta Dames 4') ||  n.team_away.includes('Osta Dames 4')) {return n;}
             });
             $scope.D5wedstrijden = $scope.alleSportaWedstrijden2.filter(function (n){
-                if (n.division==='<span title=\"DAMES 5B\">D5B</span>' || n.division==='<span title=\"Dames Lager\">DL<\/span>' && (n.team_home.includes('Osta Berchem 3') || n.team_away.includes('Osta Berchem 3'))) {
-                    return n;
-                }
+                if (n.team_home.includes('Osta Dames 5') ||  n.team_away.includes('Osta Dames 5')) {return n;}
             });
             $scope.ready2 = true;
             console.log('process Sporta klaar');
@@ -314,25 +329,24 @@ function styleUitslagen(matchObj) {
                 d5cal.addEvent(wedstrijd, desc, loc, begin, end);
             }
         }
-        
         getAndProcessAll();
       });
 
     app.controller('RankingsController', function ($scope, $http, $rootScope){
         $scope.SportaCompetitiestanden = [];
         $scope.SportaH3B = [];
-        $scope.SportaH4A = [];
+        $scope.SportaH3A = [];
         $scope.SportaD4B = [];
         $scope.SportaD5A = [];
         $scope.SportaD5B = [];
-        $scope.H1GAstand = [];
+        $scope.H3PBstand = [];
         $scope.D2GABstand = [];
-        $scope.D3GAstand = [];
+        $scope.D2GAAstand = [];
         $scope.MU15stand = [];
         $scope.JU15stand = [];
         
         function getAllRankings(){
-            let jsonfiles_stand = ["H1GA.json", "D2GAB.json", "D3GA.json", "MU15stand.json", "JU15stand.json"];
+            let jsonfiles_stand = ["H3PB.json", "D2GAB.json", "D2GAA.json", "MU15stand.json", "JU15stand.json"];
             
             function laadRankingFiles(bestand) {
                 var xobj2 = new XMLHttpRequest();
@@ -341,17 +355,17 @@ function styleUitslagen(matchObj) {
                 xobj2.onreadystatechange = function () {
                     if (xobj2.readyState == 4 && xobj2.status == "200") {
                         let data = JSON.parse(xobj2.responseText);
-                        if (bestand == "H1GA.json") {
-                            $scope.H1GAstand = data;
-                            $scope.H1GAstand.splice(0,1);
+                        if (bestand == "H3PB.json") {
+                            $scope.H3PBstand = data;
+                            $scope.H3PBstand.splice(0,1);
                         }
                         if (bestand == "D2GAB.json") {
                             $scope.D2GABstand = data;
                             $scope.D2GABstand.splice(0,1);
                         }
-                        if (bestand == "D3GA.json") {
-                            $scope.D3GAstand = data;
-                            $scope.D3GAstand.splice(0,1);
+                        if (bestand == "D2GAA.json") {
+                            $scope.D2GAAstand = data;
+                            $scope.D2GAAstand.splice(0,1);
                         }
                         if (bestand == "MU15stand.json") {
                             $scope.MU15stand = data;
@@ -383,9 +397,8 @@ function styleUitslagen(matchObj) {
             for (var x in data) {arr.push(data[x]);};
             $scope.SportaCompetitiestanden = arr;
             //filteren per ploeg/competitie
-            $scope.SportaH3B = $scope.SportaCompetitiestanden[11].standing;           
-            $scope.SportaH4A = $scope.SportaCompetitiestanden[12].standing;
-            $scope.SportaD4B = $scope.SportaCompetitiestanden[5].standing;
+            $scope.SportaH3B = $scope.SportaCompetitiestanden[11].standing;
+            $scope.SportaH3A = $scope.SportaCompetitiestanden[10].standing;
             $scope.SportaD5A = $scope.SportaCompetitiestanden[6].standing; 
             $scope.SportaD5B = $scope.SportaCompetitiestanden[7].standing;
         }
@@ -413,7 +426,7 @@ function styleUitslagen(matchObj) {
     app.filter('recenteWedstrijden', function() {
       return function(items) {
           let recentvoorbij = moment().subtract(3, 'd');
-          let nabijtoekomst = moment().add(7, 'd');
+          let nabijtoekomst = moment().add(14, 'd');
           return items.filter(function(item){
               return moment(item.datetime).isBetween(recentvoorbij, nabijtoekomst);
           })
