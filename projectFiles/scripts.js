@@ -61,16 +61,21 @@ function hernoemGewestPloegen(matchObj){
         }
 }
 function styleUitslagen(matchObj) {
-    if (matchObj.result != null) {
+    if (matchObj.result !== null) {
         let uitslagParts = matchObj.result.split(" - ");
         let thuis = matchObj.team_home;
         let uit = matchObj.team_away;
-        if ((uitslagParts[0] == 3 && thuis.includes('Osta')) || (uitslagParts[1] == 3 && uit.includes('Osta')) ){
-            matchObj.result = '<span class="badge win">' + matchObj.result + '</span>';
+        if ((thuis === 'Osta Dames 3' && uit === 'Osta Dames 5') || (thuis === 'Osta Dames 5' && uit === 'Osta Dames 3')) {
+            // geen badge toekennen
         }
         else {
-            matchObj.result = '<span class="badge loss">' + matchObj.result + '</span>';
-        }
+            if ((uitslagParts[0] == 3 && thuis.includes('Osta')) || (uitslagParts[1] == 3 && uit.includes('Osta')) ){
+                matchObj.result = '<span class="badge win">' + matchObj.result + '</span>';
+            }
+            else {
+                matchObj.result = '<span class="badge loss">' + matchObj.result + '</span>';
+            }
+        }    
     }
 }
 
