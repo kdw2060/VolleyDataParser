@@ -298,7 +298,7 @@ function styleUitslagen(matchObj) {
                 let desc = '';
                 let loc = $scope.H2wedstrijden[i].location;
                 let begin = $scope.H2wedstrijden[i].datetime;
-                let end = begin;
+                let end = moment(begin).add(90, 'minutes').toDate();
                 h2cal.addEvent(wedstrijd, desc, loc, begin, end);
             }
             for (i=0; i < $scope.H3wedstrijden.length; i++) {

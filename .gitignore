@@ -24,3 +24,8 @@ projectFiles/dames2beker.json
 projectFiles/H3PB.json
 projectFiles/heren1beker.json
 projectFiles/D2GAA.json
+nodeJSversion/agenda-ids.txt
+nodeJSversion/credentials.json
+nodeJSversion/package.json
+nodeJSversion/index.js
+nodeJSversion/token.json
