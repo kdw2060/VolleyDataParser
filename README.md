@@ -8,11 +8,11 @@ Deze code is in gebruik op https://ostaberchem.be en mag vrij aangepast en gebru
 
 ## Aanpassen
 ### PHP proxy en parser
-In de map `php` vind je proxy-services terug die de Sporta Mijn Beheer api aanspreekt om live kalenders en rankings op te halen.
-In deze files moet je het organisation-id aanpassen naar dat van jouw club.
-(proxy is nodig omdat de api calls client-side uitgevoerd worden en je anders CORS violations krijgt)
+In de map `php` vind je proxy-scripts terug die de Sporta Mijn Beheer api aanspreekt om live kalenders en rankings op te halen.
+In deze files moet je het organisation-id aanpassen naar dat van jouw club en de Access-Control header aanpassen met de url van jouw website
+(proxy is nodig omdat de api calls client-side uitgevoerd worden en je anders CORS violations krijgt).
 
-De file `get_and_convert_xls_files.php` downloadt dan weer kalenders en rankings van volleyscores.be voor ploegen die in gewest, provinciale of landelijke reeksen spelen en zet de data om naar json. Hierin moet je de arrays met ploegen en url's van de respectievelijke kalenders/rankings aanpassen naar die van jouw ploegen. Die info is te bekomen door met de devTools van je browser de network-requests van volleyscores.be te bekijken. 
+De file `get_and_convert_xls_files.php` downloadt dan weer kalenders en rankings van volleyscores.be voor ploegen die in gewest, provinciale of landelijke reeksen spelen en zet de data om naar json. Hierin moet je de arrays met ploegen en url's van de respectievelijke kalenders/rankings aanpassen naar die van jouw ploegen. Die info is te bekomen door met de dev-tools van je browser de network-requests van volleyscores.be te bekijken. 
 
 ### Angular code
 Ik ga er van uit dat je reeds vertrouwd bent met Angular development. In de `src/app` folder vind je de project-files terug. 
@@ -22,7 +22,7 @@ Voor de Sporta wedstrijdkalenders is geen aanpassing aan de code vereist, voor d
 De functies voor het hernoemen van ploegen en stylen van de uitslagen pas je ofwel aan of kun je ook wissen als je die zaken niet belangrijk vindt (en dan de aanroepen van deze functies ook wissen).
 
 ## Builden en installeren
-De php files moet je ergens op je webserver een plek geven. Pas vervolgens ook de waarde van `webserverpad` aan in `getData.service.ts` naar de maps die je gebruikt hebt.
+De php files moet je ergens op je webserver een plek geven. Pas vervolgens ook de waarde van `webserverpad` aan in `getData.service.ts` naar de map die je gebruikt hebt.
 `get_and_convert_xls_files.php` moet je vervolgens met een cron-job ook op regelmatige basis aanroepen om wanneer nodig de nieuwste data binnen te halen (typisch in het weekend en op maandag).
 
 De Angular code moet gebuild worden tot een enkele javascript file die je net als de php files op je webserver een plek moet geven.
