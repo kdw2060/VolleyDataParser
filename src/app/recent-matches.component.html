@@ -1,0 +1,40 @@
+<!-- The @if block subscribes to the observable with the async pipe -->
+@if (matches$ | async; as matches) {
+  <div class="sp-scrollable-table-wrapper">
+    <table class="sp-data-table">
+      <thead>
+        <tr>
+          <th>Datum - tijdstip</th>
+          <th>Competitie</th>
+          <th>Wedstrijd</th>
+          <th>Uitslag</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (match of matches | recentMatches; track match.uid) {
+          <tr>
+            <td>{{ match.dateString }}</td>
+            <td>{{ match.division }}</td>
+            <td>{{ match.team_home }} - {{ match.team_away }}</td>
+            <td>
+            <span [ngClass]="{
+              'badge': match.resultStatus === 'win' || match.resultStatus === 'loss',
+              'win':   match.resultStatus === 'win',
+              'loss':  match.resultStatus === 'loss'
+            }">
+                {{ match.result }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4" style="text-align: center;">Geen recente wedstrijden gevonden.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+} @else {
+  <!-- This @else block is shown while the (matches$ | async) is resolving -->
+  <p>Wedstrijden laden...</p>
+}
