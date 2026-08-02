@@ -41,7 +41,7 @@ export class DataService {
   }
 
   private fetchAndProcessMatches(): Observable<Match[]> {
-  const gewestFiles = ['heren1.json', 'dames_beker.json', 'dames1.json', 'dames2.json', 'dames5.json'];
+  const gewestFiles = ['heren1.json', 'dames_beker_gew.json', 'dames_beker_prov.json', 'dames1.json', 'dames2.json', 'dames5.json'];
   const gewestRequests = gewestFiles.map(file => this.http.get<any[]>(webserverpad + file));
   const sportaRequest = this.http.get<any>(webserverpad + "SportaAlleTeamkalendersProxy.php");
 
@@ -124,7 +124,7 @@ export class DataService {
   
 
   private fetchAndProcessRankings(): Observable<any> {
-    const gewestRankingFiles = ["AHP3A.json", "D1GA.json", "D2GAB.json"];
+    const gewestRankingFiles = ["AHP3A.json", "ADP3B.json", "ADP4A.json", "ADP5AA.json"];
     const gewestRankingRequests = gewestRankingFiles.map(file => 
         this.http.get<any[]>(webserverpad + file).pipe(map(data => data.slice(1))) // remove header row
     );
@@ -133,8 +133,9 @@ export class DataService {
 
     return forkJoin({
         AHP3Astand: gewestRankingRequests[0],
-        D1GAstand: gewestRankingRequests[1],
-        D2GABstand: gewestRankingRequests[2], 
+        ADP3Bstand: gewestRankingRequests[1],
+        ADP4Astand: gewestRankingRequests[2],
+        ADP5AAstand: gewestRankingRequests[3], 
         sporta: sportaRankingRequest,
     }).pipe(
         map(rankings => {
@@ -142,8 +143,9 @@ export class DataService {
            const finalRankings =
           {
             AHP3Astand: rankings.AHP3Astand,
-            D1GAstand: rankings.D1GAstand,
-            D2GABstand: rankings.D2GABstand,
+            ADP3Bstand: rankings.ADP3Bstand,
+            ADP4Astand: rankings.ADP4Astand,
+            ADP5AAstand: rankings.ADP5AAstand,
             SportaH2:   Object.values(sportaRankingsArray[2]?.standing || {}),
             SportaH3A:  Object.values(sportaRankingsArray[3]?.standing || {}),
             SportaD3B:  Object.values(sportaRankingsArray[0]?.standing || {}),
@@ -155,27 +157,35 @@ export class DataService {
   }
 
     private hernoemGewestPloegen(match: Match): Match {
-        if (match.division === 'Heren Promo 3 A') {
+      if (match.division.includes('Heren')) {
             match.division = 'AHP3A';
-            if (match.team_home === 'Osta Berchem') { match.team_home = 'Osta Heren 1'; }
-            if (match.team_away === 'Osta Berchem') { match.team_away = 'Osta Heren 1'; }
+            if (match.team_home === 'Osta Berchem A') { match.team_home = 'Osta Heren 1'; }
+            if (match.team_away === 'Osta Berchem A') { match.team_away = 'Osta Heren 1'; }
         }
-        if (match.division === 'Dames 1ste gewest Antwerpen') {
-          match.division = 'D1GA';
-          if (match.team_home === 'OSTA BERCHEM A') {match.team_home = 'Osta Dames 1'}
-          if (match.team_away === 'OSTA BERCHEM A') {match.team_away = 'Osta Dames 1'}
+      if (match.division.includes('Dames promo 3')) {
+          match.division = 'ADP3B';
+          if (match.team_home === 'Osta Berchem A') {match.team_home = 'Osta Dames 1'}
+          if (match.team_away === 'Osta Berchem A') {match.team_away = 'Osta Dames 1'}
+          }
+      if (match.division.includes('Dames promo 4')) {
+          match.division = 'ADP4A';
           if (match.team_home === 'OSTA BERCHEM B') {match.team_home = 'Osta Dames 2'}
           if (match.team_away === 'OSTA BERCHEM B') {match.team_away = 'Osta Dames 2'}
           }
-      if (match.division === 'Dames 2de gewest Antwerpen B') {
-          match.division = 'D2GAB';
-          if (match.team_home === 'OSTA BERCHEM C') {match.team_home = 'Osta Dames 5'}
-          if (match.team_away === 'OSTA BERCHEM C') {match.team_away = 'Osta Dames 5'}
+      if (match.division.includes('Dames promo 5')) {
+            match.division = 'ADP5AA';
+            if (match.team_home === 'OSTA BERCHEM C') {match.team_home = 'Osta Dames 5'}
+            if (match.team_away === 'OSTA BERCHEM C') {match.team_away = 'Osta Dames 5'}
+            }
+      if (match.division === 'Beker van het gewest Antwerpen Dames Provinciaal') {
+          match.division = 'Beker Dames Prov.';
+          if (match.team_home.includes('OSTA BERCHEM')) {match.team_home = 'Osta Dames 1'}
+          if (match.team_away.includes('OSTA BERCHEM')) {match.team_away = 'Osta Dames 1'}
           }
       if (match.division === 'Beker van het gewest Antwerpen Dames Gewestelijk') {
-          match.division = 'Beker Dames';
-          if (match.team_home === 'OSTA BERCHEM A (1G)') {match.team_home = 'Osta Dames Bekerploeg'}
-          if (match.team_away === 'OSTA BERCHEM A (1G)') {match.team_away = 'Osta Dames Bekerploeg'}
+          match.division = 'Beker Dames Gew.';
+          if (match.team_home.includes('OSTA BERCHEM')) {match.team_home = 'Osta Dames 2'}
+          if (match.team_away.includes('OSTA BERCHEM')) {match.team_away = 'Osta Dames 2'}
           }
         return match;
     }
@@ -183,16 +193,20 @@ export class DataService {
     private hernoemSportaPloegen(match: Match): Match {
         if (match.division == 'H2' && match.team_home.includes('Osta Berchem 1')) { match.team_home = 'Osta Heren 2'; }
         if (match.division == 'H2' && match.team_away.includes('Osta Berchem 1')) { match.team_away = 'Osta Heren 2'; }
-        if (match.division == 'H3A' && match.team_home.includes('Osta Berchem 2')) { match.team_home = 'Osta Heren 3'; }
-        if (match.division == 'H3A' && match.team_away.includes('Osta Berchem 2')) { match.team_away = 'Osta Heren 3'; }
-        if (match.team_home.includes('Osta Berchem 2 (H3A)')) { match.team_home = 'Osta Heren 3'; }
-        if (match.team_away.includes('Osta Berchem 2 (H3A)')) { match.team_away = 'Osta Heren 3'; }
+        if (match.division == 'H3B' && match.team_home.includes('Osta Berchem 2')) { match.team_home = 'Osta Heren 3'; }
+        if (match.division == 'H3B' && match.team_away.includes('Osta Berchem 2')) { match.team_away = 'Osta Heren 3'; }
+        if (match.team_home.includes('Osta Berchem 2 (H3B)')) { match.team_home = 'Osta Heren 3'; }
+        if (match.team_away.includes('Osta Berchem 2 (H3B)')) { match.team_away = 'Osta Heren 3'; }
         if (match.division == 'D3B' && match.team_home.includes('Osta Berchem 1')) { match.team_home = 'Osta Dames 3'; }
         if (match.division == 'D3B' && match.team_away.includes('Osta Berchem 1')) { match.team_away = 'Osta Dames 3'; }
         if (match.division == 'D5' && match.team_home.includes('Osta Berchem 2')) { match.team_home = 'Osta Dames 4'; }
         if (match.division == 'D5' && match.team_away.includes('Osta Berchem 2')) { match.team_away = 'Osta Dames 4'; }
         if (match.division == 'D5' && match.team_home.includes('Osta Berchem 3')) { match.team_home = 'Osta Dames 6'; }
         if (match.division == 'D5' && match.team_away.includes('Osta Berchem 3')) { match.team_away = 'Osta Dames 6'; }
+        if (match.team_home.includes('Osta Berchem 3 (D5)')) { match.team_home = 'Osta Dames 6'; }
+        if (match.team_away.includes('Osta Berchem 3 (D5)')) { match.team_away = 'Osta Dames 6'; }
+        if (match.division == 'D5' && match.team_home.includes('Osta Berchem 4')) { match.team_home = 'Osta Dames 7'; }
+        if (match.division == 'D5' && match.team_away.includes('Osta Berchem 4')) { match.team_away = 'Osta Dames 7'; }
         
         return match;
     }
@@ -238,6 +252,7 @@ export class DataService {
             'BOR': 'Sporthal Borgerhout, Plantin & Moretuslei, Borgerhout',
             'BB': 'Ter Smisse, L. Van Regenmortellei 6, Borsbeek',
             'LOEN': 'Sporthal Loenhout, Kerkblokstraat 16, Loenhout',
+            'MINI': 'Minisporthal Mortsel, Osylei 86, Mortsel',
             'NIEL': 'Gem. Sporthal Niel, J. Wauterslaan, Niel',
             'KAB': 'Sporthal KAB, Brasschaatsesteenweg 35, Kalmthout',
             'LOO': 'Het Loo, Antwerpsesteenweg 59, Broechem',

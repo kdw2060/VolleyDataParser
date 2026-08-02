@@ -34,7 +34,7 @@ De Angular code moet gebuild worden tot een enkele javascript file die je net al
 Gebruik tijdens het developen:
 
 ```bash
-ng build --configuration development
+npm run ng build --configuration development
 ```
 
 --> dit levert in de /dist folder een niet minified bestand op waardoor het makkelijker is om issues te debuggen.
@@ -42,10 +42,10 @@ ng build --configuration development
 Eens alles op punt staat gebruik je:
 
 ```bash
-ng build --output-hashing none
+npm run ng build
 ```
 
---> dit levert een `main.js` bestand op dat geoptimaliseerd en minified is.
+--> dit levert in de /dist folder een `main.js` bestand op dat geoptimaliseerd en minified is.
 
 Het .js bestand moet je vervolgens ergens in je website code inladen met een `<script>` tag of op de manier die past voor het CMS dat je gebruikt.
 

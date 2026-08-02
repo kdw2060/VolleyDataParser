@@ -2,7 +2,7 @@
 
 require 'vendor/autoload.php';
 
-$inputFileName = '../../dames1.xls';
+$inputFileName = './data/test_data.xls';
 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
 $sheetData = $spreadsheet->getActiveSheet()->toArray();
 
@@ -32,7 +32,7 @@ foreach ($sheetData as $row){
 echo "Save to file\n";
 
 $json = json_encode($data, JSON_UNESCAPED_UNICODE);
-$outputFileName = './data/d1.json';
+$outputFileName = './data/test_data.json';
 file_put_contents($outputFileName, $json);
 
 echo "Job is done\n";
